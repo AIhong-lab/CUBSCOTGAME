@@ -434,7 +434,7 @@
       },
       {
         id: 11, chapter: '第十二篇｜春天的喜悅（全能技能章與升團）', emoji: '🌈', type: 'battle',
-        enemy: { name: '升團線前的最後考驗', icon: '🌪️', hp: 110, atk: 19 },
+        enemy: { name: '升團線前的最後考驗', icon: '🌪️', hp: 135, atk: 21 },
         reward: { icon: '👑', name: '全能技能章（26項鑲金邊榮譽）', desc: '完成羚羊→狼→鹿→豹與三類 26 項技能章，準備跨過升團線！' },
         intro: [
           { av: '🌈', sp: '旁白', txt: '春天到了，月夜天空掛起白虹！在跨過升團線成為童軍之前，迎接最後的挑戰吧！' },
@@ -673,7 +673,8 @@
       { icon: '🧭', name: '迷霧岔路', cat: 'direction', intro: '起霧了，路分成好幾條！用方位知識找出正確方向。', win: '🧭 辨明方向，走出迷霧！' },
       { icon: '🌊', name: '湍急小溪', cat: 'safety', intro: '溪水好急！先想想安全守則再過去。', win: '🌊 安全通過小溪！' },
       { icon: '🔥', name: '沒熄滅的營火', cat: 'camp', intro: '有人留下沒熄滅的營火！用正確的方法處理它。', win: '💧 營火安全熄滅了！' },
-      { icon: '🦉', name: '貓頭鷹的考驗', cat: 'nature', intro: '森林裡的老貓頭鷹要考考你的自然觀察力！', win: '🦉 貓頭鷹點點頭，讓你通過！' }
+      { icon: '🦉', name: '貓頭鷹的考驗', cat: 'nature', intro: '森林裡的老貓頭鷹要考考你的自然觀察力！', win: '🦉 貓頭鷹點點頭，讓你通過！' },
+      { icon: '📘', name: '小黃本檢核站', cat: 'badge', intro: '服務員在這裡設了檢核站，要檢查你的進程與技能章知識！', win: '📘 小黃本蓋章，檢核通過！' }
     ];
 
     // 連續闖關模式的敵人
@@ -1075,7 +1076,23 @@
       }
       const kinds = OBSTACLES.slice(0, d.obstacleKinds);
       const obstacles = [];
-      const usable = path.slice(1, -1); // 不放在起點旁和 NPC 身上
+      // 只把阻礙放在「擋住就到不了 NPC」的格子，迴圈捷徑繞不過去
+      const reachesNpcAvoiding = (bx, by) => {
+        const seen = new Set([`${start.x},${start.y}`]);
+        const qq = [[start.x, start.y]];
+        for (let h = 0; h < qq.length; h++) {
+          const [cx, cy] = qq[h];
+          if (cx === far.x && cy === far.y) return true;
+          for (const [dx, dy] of DIRS4) {
+            const nx = cx + dx, ny = cy + dy, key = `${nx},${ny}`;
+            if (nx < 0 || ny < 0 || nx >= N || ny >= N || grid[ny][nx] === 1 || seen.has(key) || (nx === bx && ny === by)) continue;
+            seen.add(key);
+            qq.push([nx, ny]);
+          }
+        }
+        return false;
+      };
+      const usable = path.slice(1, -1).filter(([x, y]) => !reachesNpcAvoiding(x, y)); // 不放在起點旁和 NPC 身上
       const count = Math.min(d.obstacles, usable.length);
       const taken = new Set();
       for (let i = 0; i < count; i++) {
