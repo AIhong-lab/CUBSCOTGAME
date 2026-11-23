@@ -1518,78 +1518,142 @@
       return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
     }
 
+    // 森林迷宮：一樣用搖桿自由走動（不是走格子），樹籬就是迷宮的牆
     function generateFreeForest(idx) {
       const W = FOREST_WORLD;
-      const jitter = (base, range) => base + (Math.random() - 0.5) * range;
-      const start = { x: 165, y: W - 165 };
-      const fork1 = { x: jitter(420, 90), y: jitter(680, 90) };
-      const fork2 = { x: jitter(640, 100), y: jitter(410, 90) };
-      const npcPos = { x: W - 170, y: 170 };
+      const N = idx < 4 ? 7 : idx < 8 ? 8 : 9;   // 越後面的篇章迷宮越大
+      const C = W / N;
+      const key = (c, r) => `${c},${r}`;
+      const center = (c, r) => ({ x: (c + 0.5) * C, y: (r + 0.5) * C, k: key(c, r) });
+      const edgeKey = (k1, k2) => (k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`);
+      const inside = (c, r) => c >= 0 && r >= 0 && c < N && r < N;
+      const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      const open = new Set();
 
-      // 兩座路標分布在左右岔路，加上一處隱藏寶箱岔路
-      const sign1 = { x: jitter(250, 70), y: jitter(380, 90), name: '林間路標', lit: false };
-      const sign2 = { x: jitter(780, 80), y: jitter(740, 90), name: '古樹路標', lit: false };
-      const secretPos = { x: jitter(520, 90), y: jitter(210, 60) };
+      // 1. 隨機挖出迷宮（每次都不一樣）
+      const sc = 0, sr = N - 1;
+      const seen = new Set([key(sc, sr)]);
+      const stack = [[sc, sr]];
+      while (stack.length) {
+        const [c, r] = stack[stack.length - 1];
+        const nb = DIRS.map(([dc, dr]) => [c + dc, r + dr]).filter(([nc, nr]) => inside(nc, nr) && !seen.has(key(nc, nr)));
+        if (!nb.length) { stack.pop(); continue; }
+        const [nc, nr] = nb[Math.floor(Math.random() * nb.length)];
+        open.add(edgeKey(key(c, r), key(nc, nr)));
+        seen.add(key(nc, nr));
+        stack.push([nc, nr]);
+      }
+      // 2. 多打通幾面牆，形成岔路與可以選擇的路線
+      let extra = 2 + Math.floor(N / 3), guard = 0;
+      while (extra > 0 && guard++ < 300) {
+        const c = Math.floor(Math.random() * N), r = Math.floor(Math.random() * N);
+        const [dc, dr] = Math.random() < 0.5 ? [1, 0] : [0, 1];
+        if (!inside(c + dc, r + dr)) continue;
+        const ek = edgeKey(key(c, r), key(c + dc, r + dr));
+        if (open.has(ek)) continue;
+        open.add(ek);
+        extra--;
+      }
+      const isOpen = (c, r, c2, r2) => open.has(edgeKey(key(c, r), key(c2, r2)));
+      const links = (c, r) => DIRS.map(([dc, dr]) => [c + dc, r + dr]).filter(([nc, nr]) => inside(nc, nr) && isOpen(c, r, nc, nr));
 
-      // 多條林間小徑與岔路網
-      const trails = [
-        [start, fork1],
-        [fork1, sign1],
-        [sign1, fork2],
-        [fork1, sign2],
-        [sign2, fork2],
-        [fork2, npcPos],
-        [fork2, secretPos],
-        [sign1, secretPos]
+      // 3. 找出離起點最遠的格子放任務 NPC，以及主路線
+      const dist = new Map([[key(sc, sr), 0]]);
+      const prev = new Map();
+      const q = [[sc, sr]];
+      for (let h = 0; h < q.length; h++) {
+        const [c, r] = q[h];
+        for (const [nc, nr] of links(c, r)) {
+          const k = key(nc, nr);
+          if (dist.has(k)) continue;
+          dist.set(k, dist.get(key(c, r)) + 1);
+          prev.set(k, [c, r]);
+          q.push([nc, nr]);
+        }
+      }
+      let far = [sc, sr], farD = 0;
+      dist.forEach((d, k) => { if (d > farD) { farD = d; far = k.split(',').map(Number); } });
+      const path = [];
+      for (let cur = far; cur; cur = prev.get(key(cur[0], cur[1]))) path.unshift(cur);
+      const onPath = new Set(path.map(([c, r]) => key(c, r)));
+      const deadEnds = [];
+      for (let c = 0; c < N; c++) for (let r = 0; r < N; r++) {
+        if (links(c, r).length === 1 && !onPath.has(key(c, r))) deadEnds.push([c, r]);
+      }
+      for (let i = deadEnds.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deadEnds[i], deadEnds[j]] = [deadEnds[j], deadEnds[i]]; }
+      const used = new Set([key(sc, sr), key(far[0], far[1])]);
+      const takeCell = (preferred, fallback) => {
+        const pick = preferred.find(([c, r]) => !used.has(key(c, r))) || fallback;
+        used.add(key(pick[0], pick[1]));
+        return pick;
+      };
+      const at = (f) => path[Math.min(path.length - 2, Math.max(1, Math.floor(path.length * f)))];
+
+      const start = center(sc, sr);
+      const npcPos = center(far[0], far[1]);
+      // 路標一：主路線上；路標二：藏在靠近後半段的岔路盡頭
+      const s1 = takeCell([at(0.45)], at(0.4));
+      const target2 = at(0.75);
+      const s2 = takeCell([...deadEnds].sort((A, B) => (Math.abs(A[0] - target2[0]) + Math.abs(A[1] - target2[1])) - (Math.abs(B[0] - target2[0]) + Math.abs(B[1] - target2[1]))), at(0.7));
+      const sign1 = { ...center(s1[0], s1[1]), name: '林間路標', lit: false };
+      const sign2 = { ...center(s2[0], s2[1]), name: '古樹路標', lit: false };
+      // 寶物放在岔路盡頭，鼓勵探索；最遠的死路藏秘寶箱
+      const chestCell = takeCell([...deadEnds].sort((A, B) => (dist.get(key(B[0], B[1])) || 0) - (dist.get(key(A[0], A[1])) || 0)), at(0.85));
+      const honeyCell = takeCell(deadEnds, at(0.25));
+      const cloverCell = takeCell(deadEnds, at(0.6));
+      const loot = [
+        { ...center(honeyCell[0], honeyCell[1]), kind: 'honey', taken: false },
+        { ...center(cloverCell[0], cloverCell[1]), kind: 'clover', taken: false },
+        { ...center(chestCell[0], chestCell[1]), kind: 'chest', taken: false }
       ];
 
-      // 岔路口木頭指示牌
-      const forkBoards = [
-        { x: fork1.x, y: fork1.y - 26, text: '↖ 林間路標 ｜ 古樹路標 ↘' },
-        { x: fork2.x, y: fork2.y - 26, text: '↗ 任務目標 ｜ 秘境岔路 ↖' }
-      ];
-
-      // 生成森林樹木與岩石障礙（避開所有小徑與空地）
-      const obstacles = [];
-      const clearPoints = [start, fork1, fork2, npcPos, sign1, sign2, secretPos];
-      for (let i = 0; i < 190; i++) {
-        const ox = 55 + Math.random() * (W - 110);
-        const oy = 55 + Math.random() * (W - 110);
-        const r = 20 + Math.random() * 11;
-        let blocked = false;
-        for (const cp of clearPoints) {
-          if (Math.hypot(ox - cp.x, oy - cp.y) < 88) { blocked = true; break; }
-        }
-        if (blocked) continue;
-        for (const [a, b] of trails) {
-          if (distToSegment(ox, oy, a.x, a.y, b.x, b.y) < 56) { blocked = true; break; }
-        }
-        if (blocked) continue;
-        for (const prev of obstacles) {
-          if (Math.hypot(ox - prev.x, oy - prev.y) < prev.r + r + 10) { blocked = true; break; }
-        }
-        if (!blocked) {
-          const kind = Math.random() < 0.78 ? 'tree' : 'rock';
-          obstacles.push({ x: ox, y: oy, r, kind, shade: Math.random() });
+      // 4. 林間小徑（每條相通的走道）與岔路口指示牌
+      const trails = [];
+      open.forEach(ek => {
+        const [k1, k2] = ek.split('|');
+        const [c1, r1] = k1.split(',').map(Number), [c2, r2] = k2.split(',').map(Number);
+        trails.push([center(c1, r1), center(c2, r2)]);
+      });
+      const forkBoards = [];
+      for (const [c, r] of path) {
+        if (forkBoards.length >= 2 || (c === sc && r === sr)) continue;
+        // 指示牌之間至少隔 2 格，避免文字疊在一起
+        if (forkBoards.some(fb => Math.abs(fb.c - c) + Math.abs(fb.r - r) < 3)) continue;
+        if (links(c, r).length >= 3) {
+          const pt = center(c, r);
+          forkBoards.push({ c, r, x: pt.x, y: pt.y - 26, text: `岔路！目標在${getCompassDir(pt.x, pt.y, npcPos.x, npcPos.y)}` });
         }
       }
 
-      // 花草裝飾點綴
+      // 5. 樹籬牆：沒有打通的格線都種滿樹（碰撞沿用原本的圓形推開）
+      const obstacles = [];
+      const placed = new Set();
+      const addWall = (x1, y1, x2, y2) => {
+        const n = Math.max(1, Math.round(Math.hypot(x2 - x1, y2 - y1) / 24));
+        for (let i = 0; i <= n; i++) {
+          const x = x1 + (x2 - x1) * i / n, y = y1 + (y2 - y1) * i / n;
+          const pk = `${Math.round(x / 6)},${Math.round(y / 6)}`;
+          if (placed.has(pk)) continue;
+          placed.add(pk);
+          obstacles.push({ x: x + (Math.random() - 0.5) * 3, y: y + (Math.random() - 0.5) * 3, r: 17 + Math.random() * 4, kind: Math.random() < 0.1 ? 'rock' : 'tree', shade: Math.random() });
+        }
+      };
+      for (let c = 0; c < N; c++) for (let r = 0; r < N; r++) {
+        if (c < N - 1 && !isOpen(c, r, c + 1, r)) addWall((c + 1) * C, r * C, (c + 1) * C, (r + 1) * C);
+        if (r < N - 1 && !isOpen(c, r, c, r + 1)) addWall(c * C, (r + 1) * C, (c + 1) * C, (r + 1) * C);
+      }
+      addWall(0, 0, W, 0); addWall(0, W, W, W); addWall(0, 0, 0, W); addWall(W, 0, W, W);
+
+      // 6. 走道上的野花點綴
       const flowers = [];
-      for (let i = 0; i < 48; i++) {
+      for (let i = 0; i < N * N; i++) {
+        const c = Math.floor(Math.random() * N), r = Math.floor(Math.random() * N);
         flowers.push({
-          x: 70 + Math.random() * (W - 140),
-          y: 70 + Math.random() * (W - 140),
+          x: (c + 0.5) * C + (Math.random() - 0.5) * C * 0.55,
+          y: (r + 0.5) * C + (Math.random() - 0.5) * C * 0.55,
           color: ['#f472b6', '#fbbf24', '#60a5fa', '#ffffff'][i % 4]
         });
       }
-
-      // 沿著岔路放置補給道具
-      const loot = [
-        { x: (fork1.x + sign1.x) / 2, y: (fork1.y + sign1.y) / 2, kind: 'honey', taken: false },
-        { x: (fork1.x + sign2.x) / 2, y: (fork1.y + sign2.y) / 2, kind: 'clover', taken: false },
-        { x: secretPos.x, y: secretPos.y, kind: 'chest', taken: false }
-      ];
 
       return {
         idx,
@@ -1601,7 +1665,10 @@
         obstacles,
         flowers,
         loot,
-        revealed: [{ x: start.x, y: start.y, r: 175 }]
+        revealed: [{ x: start.x, y: start.y, r: 175 }],
+        mazeN: N,
+        mazeC: C,
+        mazeSeen: new Set([start.k])
       };
     }
 
@@ -1654,7 +1721,7 @@
 
       forestData = generateFreeForest(idx);
       forestCompassTimer = 3.5;
-      showMapToast(`第 ${idx + 1} 篇：探索岔路、點亮路標找 ${forestData.npc.name}！`);
+      showMapToast(`第 ${idx + 1} 篇：走出森林迷宮、點亮路標找 ${forestData.npc.name}！`);
       runForestLoop();
     }
 
@@ -1727,6 +1794,8 @@
             fd.player.y += (dy / d) * push;
           }
         }
+
+        if (fd.mazeSeen) fd.mazeSeen.add(`${Math.floor(fd.player.x / fd.mazeC)},${Math.floor(fd.player.y / fd.mazeC)}`);
 
         // 記錄探索視野
         const lastRev = fd.revealed[fd.revealed.length - 1];
@@ -2015,6 +2084,7 @@
       fCtx.strokeStyle = 'rgba(217, 185, 130, 0.55)';
       fCtx.lineWidth = 2;
       for (const [a, b] of fd.trails) {
+        if (fd.mazeSeen && !fd.mazeSeen.has(a.k) && !fd.mazeSeen.has(b.k)) continue;
         fCtx.beginPath(); fCtx.moveTo(mmX + a.x * s, mmY + a.y * s); fCtx.lineTo(mmX + b.x * s, mmY + b.y * s); fCtx.stroke();
       }
       for (const sp of fd.signposts) {
@@ -4195,7 +4265,7 @@
           badge: '步驟 1 / 5・自由探索',
           icon: '🕹️',
           title: '滑動搖桿，自由穿梭森林岔路！',
-          desc: '不用再一格一格點囉！在畫面按住拖曳「虛擬搖桿」（或用鍵盤 WASD / 方向鍵），就能 360° 自由走遍森林岔路。',
+          desc: '森林變成了樹籬迷宮！在畫面按住拖曳「虛擬搖桿」（或用鍵盤 WASD / 方向鍵）360° 自由走動，找出通往任務角色的路。越後面的篇章迷宮越大（7×7 → 8×8 → 9×9）！',
           tips: [
             '🪧 靠近「林間路標／古樹路標」自動點亮，驅散大片迷霧並補血！',
             '🧭 迷路時點右下角「定向指引」，金色導引線會幫你帶路！',
