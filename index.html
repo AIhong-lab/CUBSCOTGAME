@@ -44,6 +44,13 @@
       50% { transform: translateY(-2px) scale(1.06); }
     }
     .cute-hop { animation: hop 1.4s ease-in-out infinite; }
+    /* 🐣 低年級模式：大字、朗讀按鈕 */
+    .easy-only { display: none !important; }
+    body.easy-mode .easy-only { display: inline-flex !important; }
+    body.easy-mode #dlg-text { font-size: 1.3rem; line-height: 1.75; }
+    body.easy-mode #quiz-q, body.easy-mode #pc-q { font-size: 1.35rem; line-height: 1.5; }
+    body.easy-mode #quiz-opts button, body.easy-mode #pc-opts button, body.easy-mode #bt-opts button, body.easy-mode #knot-choices button { font-size: 1.1rem; padding-top: .8rem; padding-bottom: .8rem; }
+    body.easy-mode #tut-body p { font-size: 1rem; line-height: 1.7; }
     .rpg-box {
       background: rgba(17, 34, 24, 0.96);
       border: 3px solid #fbbf24;
@@ -152,7 +159,7 @@
         <div class="bg-white/95 rounded-2xl border-2 border-amber-400 p-4 shadow-md space-y-3">
           <div class="flex items-center justify-between">
             <span id="quiz-tag" class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-xs font-black">幼童軍進程考驗</span>
-            <span id="quiz-progress" class="font-black text-sm text-emerald-900">答對 0 / 2</span>
+            <span class="flex items-center gap-1.5"><button type="button" data-say-again class="easy-only items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-500 text-white text-xs font-black shadow">🔈 再聽一次</button><span id="quiz-progress" class="font-black text-sm text-emerald-900">答對 0 / 2</span></span>
           </div>
           <h3 id="quiz-q" class="text-lg font-black text-gray-900 leading-snug"></h3>
           <div id="quiz-opts" class="space-y-2.5"></div>
@@ -228,7 +235,7 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between mb-1.5">
               <span id="dlg-speaker" class="text-sm font-black px-2.5 py-0.5 rounded bg-amber-400 text-emerald-950">狼王阿克拉</span>
-              <span id="dlg-page" class="text-xs text-amber-200/90 font-bold">1 / 3</span>
+              <span class="flex items-center gap-1.5"><button type="button" data-say-again class="easy-only items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-500 text-white text-xs font-black shadow">🔈 再聽一次</button><span id="dlg-page" class="text-xs text-amber-200/90 font-bold">1 / 3</span></span>
             </div>
             <p id="dlg-text" class="text-base sm:text-lg font-medium text-emerald-50 leading-relaxed min-h-[68px]"></p>
           </div>
@@ -281,6 +288,7 @@
         <div id="prog-challenge-box" class="hidden my-2 p-3.5 rounded-2xl bg-[#1b4332] border-2 border-amber-400 space-y-2 shrink-0">
           <div class="flex items-center justify-between gap-2">
             <span id="pc-tag" class="text-xs font-black text-amber-300">📘 進程核章挑戰</span>
+<button type="button" data-say-again class="easy-only items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-500 text-white text-xs font-black shadow">🔈 再聽一次</button>
             <button id="pc-close" type="button" class="text-xs text-emerald-200 font-bold px-2 py-0.5 rounded bg-white/10">取消</button>
           </div>
           <div id="pc-q" class="text-sm font-black text-white leading-snug"></div>
@@ -349,6 +357,19 @@
           <div>
             <label for="setup-name" class="block text-xs font-bold text-amber-200 mb-1">小狼姓名（或綽號）</label>
             <input id="setup-name" type="text" maxlength="12" placeholder="例如：毛克利、王小明" class="w-full px-3.5 py-2.5 rounded-xl bg-white/95 text-emerald-950 font-black text-sm border-2 border-amber-300 focus:outline-none" />
+          </div>
+          <div>
+            <div class="text-xs font-bold text-amber-200 mb-1.5">選擇年級（之後可在「🎖️ 榮譽帶 → 🎒 冒險道具」切換）</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button data-grade="easy" type="button" class="grade-opt p-2.5 rounded-xl border-2 border-white/20 bg-white/10 text-left transition">
+                <div class="font-black text-sm text-amber-200">🐣 低年級（1～3 年級）</div>
+                <div class="text-[11px] text-emerald-100">會唸給你聽・大字・2 選 1・迷宮小一點</div>
+              </button>
+              <button data-grade="normal" type="button" class="grade-opt p-2.5 rounded-xl border-2 border-white/20 bg-white/10 text-left transition">
+                <div class="font-black text-sm text-amber-200">🐺 中高年級（4～6 年級）</div>
+                <div class="text-[11px] text-emerald-100">標準難度・3 選 1</div>
+              </button>
+            </div>
           </div>
           <div>
             <div class="text-xs font-bold text-amber-200 mb-1.5">選擇你的小隊（天賦加成）</div>
@@ -482,9 +503,49 @@
       };
     }
 
-    // 題目選項洗牌：正確答案不會永遠在 A
+    // 🐣 低年級模式的語音朗讀（瀏覽器內建，不需網路下載）
+    const Speech = (() => {
+      const ok = typeof window.speechSynthesis !== 'undefined' && typeof window.SpeechSynthesisUtterance !== 'undefined';
+      let voice = null;
+      let last = '';
+      const pickVoice = () => {
+        if (!ok) return;
+        const vs = speechSynthesis.getVoices();
+        voice = vs.find(v => /zh[-_]TW/i.test(v.lang)) || vs.find(v => /zh[-_](HK|Hant)/i.test(v.lang)) || vs.find(v => /^zh/i.test(v.lang)) || null;
+      };
+      if (ok) { pickVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickVoice); } catch (e) {} }
+      const clean = (t) => String(t)
+        .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{21FF}\u{2300}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '')
+        .replace(/[「」『』【】《》]/g, '').replace(/[（(]/g, '，').replace(/[）)]/g, '，')
+        .replace(/\s+/g, ' ').trim();
+      return {
+        ok,
+        say(text, force = false) {
+          if (!ok || (!force && !state.easy) || !Sfx.enabled) return;
+          last = text;
+          try {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(clean(text));
+            u.lang = 'zh-TW';
+            if (voice) u.voice = voice;
+            u.rate = 0.9;
+            speechSynthesis.speak(u);
+          } catch (e) {}
+        },
+        again() { if (last) this.say(last, true); },
+        stop() { if (ok) { try { speechSynthesis.cancel(); } catch (e) {} } }
+      };
+    })();
+    const readQ = (q, opts) => `${q}。${opts.map((o, i) => `${'ABC'[i]}，${o}`).join('。')}`;
+    document.addEventListener('click', (e) => { if (e.target.closest('[data-say-again]')) { e.stopPropagation(); Speech.again(); } });
+
+    // 題目選項洗牌：正確答案不會永遠在 A；低年級模式只留正確答案和一個錯的（2 選 1）
     function shuffleQ(q) {
-      const order = q.opts.map((_, i) => i);
+      let order = q.opts.map((_, i) => i);
+      if (state.easy && order.length > 2) {
+        const wrong = order.filter(i => i !== q.ans);
+        order = [q.ans, wrong[Math.floor(Math.random() * wrong.length)]];
+      }
       for (let i = order.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [order[i], order[j]] = [order[j], order[i]];
@@ -1284,6 +1345,7 @@
         arcadeWins: [],
         pendingProgressCount: 0,
         tutorialDone: false,
+        easy: !!selectedEasy,
         cleared: new Array(12).fill(false)
       };
       clearProgress();
@@ -1322,6 +1384,7 @@
     }
 
     function updateHud() {
+      document.body.classList.toggle('easy-mode', !!state.easy);
       const eff = getEffectiveStats();
       if (state.hp > eff.maxHp) state.hp = eff.maxHp;
       document.getElementById('hud-lv').textContent = `Lv.${state.level}`;
@@ -1415,6 +1478,7 @@
       document.getElementById('dlg-speaker').textContent = line.sp;
       document.getElementById('dlg-text').textContent = line.txt;
       document.getElementById('dlg-page').textContent = `${dlgIdx + 1} / ${dlgQueue.length}`;
+      Speech.say(`${line.sp}說：${line.txt}`);
       document.getElementById('dlg-next').textContent = dlgIdx < dlgQueue.length - 1 ? '下一句 ▶' : dlgFinalLabel;
       Sfx.blip();
     }
@@ -1539,7 +1603,7 @@
     // 森林迷宮：一樣用搖桿自由走動（不是走格子），樹籬就是迷宮的牆
     function generateFreeForest(idx) {
       const W = FOREST_WORLD;
-      const N = idx < 4 ? 7 : idx < 8 ? 8 : 9;   // 越後面的篇章迷宮越大
+      const N = (idx < 4 ? 7 : idx < 8 ? 8 : 9) - (state.easy ? 2 : 0);   // 越後面的篇章迷宮越大；低年級小兩格
       const C = W / N;
       const key = (c, r) => `${c},${r}`;
       const center = (c, r) => ({ x: (c + 0.5) * C, y: (r + 0.5) * C, k: key(c, r) });
@@ -2689,11 +2753,11 @@
         }
         if (Math.hypot(s.player.x - en.x, s.player.y - en.y) < s.player.r + en.r && s.player.invuln <= 0) {
           s.player.invuln = s.invulnDur || 1.0;
-          s.player.hp = Math.max(10, s.player.hp - 10);
+          s.player.hp = Math.max(10, s.player.hp - (state.easy ? 6 : 10));
           if (s.liveHp) state.hp = s.player.hp;
           updateHud();
           Sfx.hit();
-          s.floats.push({ x: s.player.x, y: s.player.y - 16, txt: '-10', color: '#fb7185', life: 0.7 });
+          s.floats.push({ x: s.player.x, y: s.player.y - 16, txt: state.easy ? '-6' : '-10', color: '#fb7185', life: 0.7 });
         }
       }
 
@@ -2731,11 +2795,11 @@
           sh.x += sh.vx * dt; sh.y += sh.vy * dt; sh.life -= dt;
           if (Math.hypot(sh.x - s.player.x, sh.y - s.player.y) < s.player.r + 9 && s.player.invuln <= 0) {
             s.player.invuln = 1.0;
-            s.player.hp = Math.max(10, s.player.hp - 12);
+            s.player.hp = Math.max(10, s.player.hp - (state.easy ? 7 : 12));
             if (s.liveHp) state.hp = s.player.hp;
             updateHud();
             Sfx.hit();
-            s.floats.push({ x: s.player.x, y: s.player.y - 16, txt: '-12', color: '#fb7185', life: 0.7 });
+            s.floats.push({ x: s.player.x, y: s.player.y - 16, txt: state.easy ? '-7' : '-12', color: '#fb7185', life: 0.7 });
             s.bossShots.splice(i, 1);
             continue;
           }
@@ -2769,7 +2833,7 @@
                 finishMiniGame(`實作闖關通過！你成功點亮 ${lit} 座試煉路標！`);
                 return;
               }
-              s.boss = { x: s.W / 2, y: s.W / 2, r: 30, hp: 170, maxHp: 170, frozen: 0, shootCd: 1.5 };
+              s.boss = { x: s.W / 2, y: s.W / 2, r: 30, hp: state.easy ? 110 : 170, maxHp: state.easy ? 110 : 170, frozen: 0, shootCd: state.easy ? 2.2 : 1.5 };
               s.compassTimer = 4.0;
               document.getElementById('mg-progress').textContent = '👑 Boss戰';
               document.getElementById('mg-sub').textContent = '⚠️ 迷霧守護者現身！閃避紫球並擊敗它！';
@@ -3039,6 +3103,7 @@
       document.getElementById('knot-name').textContent = `🪢 ${k.name}`;
       document.getElementById('knot-use').textContent = k.use;
       document.getElementById('knot-mnemonic').textContent = k.mnemonic;
+      if (s.step === 0 && !feedback) Speech.say(`${k.name}。${k.use}。${k.mnemonic}。請照順序點出打結的步驟。`);
       document.getElementById('knot-count').textContent = `${s.step} / ${k.steps.length}`;
       document.getElementById('knot-done').innerHTML = k.steps.map((t, i) => i < s.step
         ? `<li class="flex gap-2 text-xs font-bold text-emerald-900"><span class="shrink-0 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]">${i + 1}</span><span>${t}</span></li>`
@@ -3114,7 +3179,7 @@
       const isTrialC = !!(activeBadgeTrial && activeBadgeTrial.stage === 'mg');
       mgState = {
         score: 0,
-        goal: isTrialC ? 4 : 6,
+        goal: (isTrialC || state.easy) ? 4 : 6,
         targetIdx,
         needleAngle: -Math.PI / 2,
         flare: null
@@ -3307,7 +3372,7 @@
         </div>
       `).join('');
 
-      const duration = 3500 + getBadgeBuffs().kimTimeBonus;
+      const duration = 3500 + getBadgeBuffs().kimTimeBonus + (state.easy ? 2500 : 0);
       const startTs = performance.now();
       const tick = () => {
         if (mode !== 'minigame' || mgKind !== 'kim' || s.phase !== 'observe') return;
@@ -3397,8 +3462,8 @@
       }
       if (st.type === 'battle') {
         mode = 'battle';
-        enemyHp = st.enemy.hp;
-        enemyMaxHp = st.enemy.hp;
+        enemyHp = Math.round(st.enemy.hp * (state.easy ? 0.7 : 1));
+        enemyMaxHp = enemyHp;
         defending = false;
         battleLock = false;
         const eImg = document.getElementById('enemy-img');
@@ -3488,7 +3553,7 @@
       setTimeout(() => {
         if (mode !== 'battle') return;
         const cEff = getEffectiveStats();
-        const rawDmg = st.enemy.atk + Math.floor(Math.random() * 5);
+        const rawDmg = Math.round(st.enemy.atk * (state.easy ? 0.7 : 1)) + Math.floor(Math.random() * 5);
         const reduced = Math.max(3, rawDmg - Math.floor(cEff.def / 3) - cEff.buffs.enemyDmgRed);
         const finalDmg = defending ? Math.max(2, Math.floor(reduced * 0.4)) : reduced;
         state.hp = Math.max(0, state.hp - finalDmg);
@@ -3518,6 +3583,7 @@
       document.getElementById('quiz-progress').textContent = `答對 ${quizScore} / ${activeQuizList.length}`;
       document.getElementById('quiz-tag').textContent = qObj.tag;
       document.getElementById('quiz-q').textContent = qObj.q;
+      Speech.say(readQ(qObj.q, qObj.opts));
       document.getElementById('quiz-feedback').textContent = '';
 
       const optsBox = document.getElementById('quiz-opts');
@@ -3873,7 +3939,19 @@
           <div class="p-3.5 rounded-xl bg-amber-500/15 border border-amber-400/30 text-xs text-amber-200">
             目前剩餘森林蜂蜜：<strong>${state.honey} 罐</strong>（戰鬥中可點「蜂蜜補血」）
           </div>
+          <button id="btn-toggle-easy" type="button" class="w-full p-3.5 rounded-xl ${state.easy ? 'bg-sky-500/25 border-sky-300' : 'bg-white/10 border-white/20'} border-2 text-left">
+            <div class="font-black text-sm text-sky-200">${state.easy ? '🐣 目前：低年級模式（會唸給你聽・大字・2 選 1）' : '🐺 目前：中高年級模式（標準難度）'}</div>
+            <div class="text-xs text-emerald-100/90 mt-0.5">點一下切換成${state.easy ? '中高年級模式' : '低年級模式'}，已經得到的進度都會保留</div>
+          </button>
         `;
+        document.getElementById('btn-toggle-easy').addEventListener('click', () => {
+          state.easy = !state.easy;
+          saveProgress();
+          updateHud();
+          Sfx.coin();
+          renderBagTab();
+          if (state.easy) Speech.say('已切換成低年級模式，我會把題目和故事唸給你聽喔！');
+        });
       }
     }
 
@@ -3885,6 +3963,7 @@
       const box = document.getElementById('prog-challenge-box');
       document.getElementById('pc-tag').textContent = `📘 ${item.rank}核章：${item.title}`;
       document.getElementById('pc-q').textContent = item.q;
+      Speech.say(readQ(item.q, item.opts));
       const fb = document.getElementById('pc-fb');
       fb.textContent = '';
       const opts = document.getElementById('pc-opts');
@@ -3962,6 +4041,21 @@
 
     let selectedSquad = '棕小隊';
     let selectedTalent = 'service';
+    let selectedEasy = false;
+    function paintGradeOpts() {
+      document.querySelectorAll('.grade-opt').forEach(b => {
+        const active = (b.getAttribute('data-grade') === 'easy') === selectedEasy;
+        b.classList.toggle('border-amber-400', active);
+        b.classList.toggle('bg-amber-500/25', active);
+        b.classList.toggle('border-white/20', !active);
+        b.classList.toggle('bg-white/10', !active);
+      });
+    }
+    document.querySelectorAll('.grade-opt').forEach(btn => btn.addEventListener('click', () => {
+      selectedEasy = btn.getAttribute('data-grade') === 'easy';
+      Sfx.blip();
+      paintGradeOpts();
+    }));
     function openSetupModal(onConfirm) {
       Sfx.blip();
       const modal = document.getElementById('setup-modal');
@@ -3969,6 +4063,8 @@
       nameInput.value = state.playerName === '毛克利' ? '' : state.playerName;
       selectedSquad = state.squad || '棕小隊';
       selectedTalent = state.talent || 'service';
+      selectedEasy = !!state.easy;
+      paintGradeOpts();
       document.querySelectorAll('.squad-opt').forEach(b => {
         const active = b.getAttribute('data-squad') === selectedSquad;
         b.classList.toggle('border-amber-400', active);
@@ -4155,6 +4251,7 @@
       const renderQ = () => {
         if (!activeBadgeTrial) return;
         const qObj = shuffleQ(qs[activeBadgeTrial.qIdx]);
+        Speech.say(readQ(qObj.q, qObj.opts));
         body.innerHTML = `
           <div class="space-y-2 text-center">
             <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/25 border border-emerald-300/50 text-emerald-200 text-xs font-black">✅ 第 1 關實作已通過！</div>
@@ -4272,7 +4369,7 @@
           badge: '步驟 1 / 5・自由探索',
           icon: '🕹️',
           title: '滑動搖桿，自由穿梭森林岔路！',
-          desc: '森林變成了樹籬迷宮！在畫面按住拖曳「虛擬搖桿」（或用鍵盤 WASD / 方向鍵）360° 自由走動，找出通往任務角色的路。越後面的篇章迷宮越大（7×7 → 8×8 → 9×9）！',
+          desc: `森林變成了樹籬迷宮！在畫面按住拖曳「虛擬搖桿」（或用鍵盤 WASD / 方向鍵）360° 自由走動，找出通往任務角色的路。越後面的篇章迷宮越大${state.easy ? '（5×5 → 6×6 → 7×7）' : '（7×7 → 8×8 → 9×9）'}！`,
           tips: [
             '🪧 靠近「林間路標／古樹路標」自動點亮，驅散大片迷霧並補血！',
             '🧭 迷路時點右下角「定向指引」，金色導引線會幫你帶路！',
@@ -4349,6 +4446,7 @@
       `).join('');
 
       prevBtn.style.visibility = tutStep === 0 ? 'hidden' : 'visible';
+      Speech.say(`${s.title}。${s.desc}`);
       nextBtn.textContent = s.isFinal ? '🐺 大吼 DYB！開始第 1 篇冒險 🚀' : '下一步 ▶';
 
 
