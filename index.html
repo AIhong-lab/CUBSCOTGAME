@@ -81,7 +81,7 @@
 
       <div class="flex items-center gap-1 shrink-0">
         <button id="btn-arcade" type="button" class="shrink-0 whitespace-nowrap px-2 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/45 border border-emerald-300/60 text-emerald-100 text-[11px] font-black">
-          🎮<span class="max-[400px]:hidden"> 試玩</span>
+          🎮<span class="max-[400px]:hidden"> 團康</span>
         </button>
         <button id="btn-bag" type="button" class="shrink-0 whitespace-nowrap px-2 py-1.5 rounded-lg bg-amber-500/25 hover:bg-amber-500/40 border border-amber-300/60 text-amber-200 text-[11px] font-black">
           🎖️ <span id="bag-count">0/28</span>
@@ -171,7 +171,7 @@
       <div id="minigame-panel" class="hidden flex-col gap-2 w-full flex-1 min-h-0">
         <div class="w-full max-w-[460px] mx-auto shrink-0 bg-[#142e21] text-white rounded-2xl border-2 border-amber-400/70 px-3.5 py-2.5 shadow-md flex items-center justify-between gap-2">
           <div class="min-w-0">
-            <div id="mg-title" class="font-black text-sm text-amber-300 truncate">🔥 星火路標遠征</div>
+            <div id="mg-title" class="font-black text-sm text-amber-300 truncate">🔥 路標遠征</div>
             <div id="mg-sub" class="text-[11px] font-bold text-emerald-200 leading-snug">自由走位點亮 3 座路標！</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
@@ -240,6 +240,7 @@
             <p id="dlg-text" class="text-base sm:text-lg font-medium text-emerald-50 leading-relaxed min-h-[68px]"></p>
           </div>
         </div>
+        <div id="dlg-choices" class="hidden mt-3 space-y-2"></div>
         <div class="flex justify-end mt-3">
           <button id="dlg-next" type="button" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-emerald-950 font-black text-sm shadow">
             繼續 ▶
@@ -259,7 +260,7 @@
             開始冒險 🚀
           </button>
           <button id="ov-arcade-btn" type="button" class="w-full py-3 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 active:scale-95 text-white font-black text-sm shadow-lg border border-emerald-300/50">
-            🎮 自由試玩 4 種童軍小遊戲
+            🎮 自由玩 4 種童軍團康
           </button>
           <button id="ov-story-btn" type="button" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-base shadow-lg hidden">
             📖 閱讀完整《叢林奇談》故事
@@ -310,16 +311,16 @@
       <!-- 4 Mini-Games Arcade Practice Modal -->
       <div id="arcade-modal" style="background: #0f2017;" class="absolute inset-0 z-30 hidden flex-col p-4 text-white">
         <div class="flex items-center justify-between pb-3 border-b border-white/15">
-          <div class="font-black text-base text-amber-300">🎮 幼童軍互動小遊戲練習場</div>
+          <div class="font-black text-base text-amber-300">🎮 幼童軍互動團康練習場</div>
           <button id="btn-close-arcade" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-bold">關閉 ×</button>
         </div>
-        <p class="text-xs text-emerald-200/90 mt-2.5 mb-2">隨時挑選任一種互動小遊戲試玩（不影響主線 12 篇進度）：</p>
+        <p class="text-xs text-emerald-200/90 mt-2.5 mb-2">隨時挑選任一種團康來玩（不影響主線 12 篇進度）：</p>
         <div class="flex-1 overflow-y-auto space-y-2.5 py-1">
           <button data-arcade="beacon" type="button" class="w-full text-left p-3.5 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-[0.99] border border-amber-300/40 flex items-center gap-3">
             <span class="text-3xl shrink-0">🔥</span>
             <div class="min-w-0">
-              <div class="font-black text-sm text-amber-300">1. 星火路標遠征（即時生存動作）</div>
-              <div class="text-xs text-emerald-100/90 mt-0.5">自由搖桿走位、自動星火攻擊，搭配定向／繩結／急救三技能點亮 3 座路標！</div>
+              <div class="font-black text-sm text-amber-300">1. 路標遠征（即時生存動作）</div>
+              <div class="text-xs text-emerald-100/90 mt-0.5">自由搖桿走位、自動火把攻擊，搭配定向／繩結／急救三技能點亮 3 座路標！</div>
             </div>
           </button>
           <button data-arcade="knot" type="button" class="w-full text-left p-3.5 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-[0.99] border border-sky-300/40 flex items-center gap-3">
@@ -424,7 +425,7 @@
         <div class="w-full max-w-[360px] bg-[#142e21] border-2 border-amber-400 rounded-3xl p-4 shadow-2xl space-y-3">
           <div class="text-center">
             <div class="text-xs font-black tracking-wider text-amber-300">✨ STARFIRE UPGRADE</div>
-            <h3 id="upgrade-title" class="text-lg font-black text-white mt-0.5">星火成長！選一項強化</h3>
+            <h3 id="upgrade-title" class="text-lg font-black text-white mt-0.5">營火成長！選一項強化</h3>
           </div>
           <div id="upgrade-choices" class="space-y-2.5"></div>
         </div>
@@ -489,7 +490,7 @@
     };
     document.querySelectorAll('img[data-img]').forEach(el => { el.src = IMG[el.dataset.img]; });
 
-    // iOS 15 以前的 Safari 沒有 roundRect，沒有它森林地圖與小遊戲會整個當掉
+    // iOS 15 以前的 Safari 沒有 roundRect，沒有它森林地圖與團康會整個當掉
     if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
       CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
         const rr = Math.max(0, Math.min(typeof r === 'number' ? r : (Array.isArray(r) ? r[0] : 0), Math.abs(w) / 2, Math.abs(h) / 2));
@@ -685,7 +686,7 @@
       },
       {
         id: 2,
-        chapter: '第三篇｜大蟒蛇的遠征（星火路標突圍）',
+        chapter: '第三篇｜大蟒蛇的遠征（路標突圍）',
         emoji: '🐍',
         type: 'minigame',
         minigame: 'beacon',
@@ -695,8 +696,8 @@
           { av: '🐍', sp: '旁白', txt: '伯魯與巴希拉在陽光灑落的岩壁上，找到了剛蛻完新皮、長達九公尺的岩石巨蟒「卡阿（Kaa）」。巴希拉聰明地告訴卡阿，猴群竟然在背後嘲笑他是「沒有腳的黃蚯蚓」，立刻激起了卡阿的怒火！' },
           { av: '🏛️', sp: '旁白', txt: '夜幕降臨，荒廢已久的「冷洞古城（Cold Lairs）」籠罩在神祕紫霧中。猴群把毛克利扔進一座滿是眼鏡蛇的古老圓頂石室，幸好毛克利立刻用「蛇族通用語」跟眼鏡蛇溝通，才平安無事。' },
           { av: '🐆', sp: '黑豹 巴希拉', txt: '「猴群發現我們了！伯魯，我先從左邊衝上露台吸引注意，你守住台階！卡阿，請從西側圍牆繞過去！」' },
-          { av: '🐒', sp: '班大洛 猴群', txt: '「快點！把那隻黑豹推下水池！別讓小狼把古城裡的星火路標點亮！」' },
-          { av: '🐍', sp: '大蟒蛇 卡阿', txt: '「嘶嘶……毛克利，我已經把石室的牆撞出缺口了！快趁現在點亮古城裡的星火路標驅散迷霧，並用你的童軍技能跟我們會合！」' },
+          { av: '🐒', sp: '班大洛 猴群', txt: '「快點！把那隻黑豹推下水池！別讓小狼把古城裡的路標點亮！」' },
+          { av: '🐍', sp: '大蟒蛇 卡阿', txt: '「嘶嘶……毛克利，我已經把石室的牆撞出缺口了！快趁現在點亮古城裡的路標驅散迷霧，並用你的童軍技能跟我們會合！」' },
           { av: '🐻', sp: '棕熊 伯魯', txt: '「小狼，別怕猴群人多！靈活走位、善用『定向、繩結、急救』三技能，點亮三座路標並擊敗迷霧守護者，卡阿就會跳起『餓蛇舞』一口氣震懾全場！」' }
         ],
         outro: [
@@ -894,14 +895,14 @@
           { av: '🐻', sp: '棕熊 伯魯', txt: '「擦乾眼淚，毛克利。阿克拉正微笑著看著你呢——拿出你成為豹級小狼的成熟與智慧，回答他最後的期許吧！」' }
         ],
         outro: [
-          { av: '🐺', sp: '狼王 阿克拉', txt: '「（在星光下唱完最後一首孤狼的狩獵歌，露出滿足的笑容）非常好……好狩獵，我的小狼。願你未來的每一步，都像今晚的星火一樣照亮別人。」' },
+          { av: '🐺', sp: '狼王 阿克拉', txt: '「（在星光下唱完最後一首孤狼的狩獵歌，露出滿足的笑容）非常好……好狩獵，我的小狼。願你未來的每一步，都像今晚的營火一樣照亮別人。」' },
           { av: '🌌', sp: '旁白', txt: '全體西奧尼狼群仰望夜空，齊聲發出莊嚴而悠長的狼嚎，向永遠的領袖阿克拉致上最高敬意。' },
-          { av: '🐆', sp: '黑豹 巴希拉', txt: '「春天很快就要來了，毛克利。在我們正式道別、迎接『升團』之前，還剩下最後一場集結所有夥伴力量的《春天的喜悅》星火最終遠征！」' }
+          { av: '🐆', sp: '黑豹 巴希拉', txt: '「春天很快就要來了，毛克利。在我們正式道別、迎接『升團』之前，還剩下最後一場集結所有夥伴力量的《春天的喜悅》最終遠征！」' }
         ]
       },
       {
         id: 11,
-        chapter: '第十二篇｜春天的喜悅（升團星火最終遠征）',
+        chapter: '第十二篇｜春天的喜悅（升團最終遠征）',
         emoji: '🌈',
         type: 'minigame',
         minigame: 'beacon',
@@ -912,11 +913,11 @@
           { av: '🐺', sp: '灰兄弟', txt: '「毛克利，我知道你想回去看看梅蘇亞阿姨，也知道你體內屬於人類的世界正在呼喚你。別擔心，無論你走到哪裡，只要你吹響哨音，我們四兄弟永遠會站在山坡上守望你！」' },
           { av: '🐻', sp: '棕熊 伯魯', txt: '「（眼眶微紅卻依然笑著）我這隻老熊已經把所有的《叢林規律》都教給你了！從剛入團的小青蛙，一路闖過羚羊、狼、鹿、豹級，你是我教過最棒的小狼！」' },
           { av: '🐍', sp: '大蟒蛇 卡阿', txt: '「嘶～聰明勇敢的少年，記得保持那顆不被貪婪迷惑的純淨之心，『好狩獵』永遠伴隨著你！」' },
-          { av: '🐆', sp: '黑豹 巴希拉', txt: '「當年我用一頭公牛為你作保，今天我正式解除這份約定——所有的叢林都屬於你，而更廣闊的人類世界也正等著你！完成這最後一場『升團星火遠征』，向你的幼童軍歲月致敬吧！」' },
-          { av: '🐺', sp: '小狼 毛克利', txt: '「謝謝你們，狼媽媽、阿克拉、伯魯、巴希拉、卡阿、哈蒂與灰兄弟！我會帶著你們教我的一切勇氣、技能與規律，點亮最後三座星火路標、迎向全新旅程！」' }
+          { av: '🐆', sp: '黑豹 巴希拉', txt: '「當年我用一頭公牛為你作保，今天我正式解除這份約定——所有的叢林都屬於你，而更廣闊的人類世界也正等著你！完成這最後一場『升團路標遠征』，向你的幼童軍歲月致敬吧！」' },
+          { av: '🐺', sp: '小狼 毛克利', txt: '「謝謝你們，狼媽媽、阿克拉、伯魯、巴希拉、卡阿、哈蒂與灰兄弟！我會帶著你們教我的一切勇氣、技能與規律，點亮最後三座路標、迎向全新旅程！」' }
         ],
         outro: [
-          { av: '🌸', sp: '旁白', txt: '三座星火路標在春風中同時綻放耀眼金光，迷霧守護者化為滿天星雨消散！西奧尼會議岩上響起響徹雲霄的幼童軍大吼聲——DYB！DOB！' },
+          { av: '🌸', sp: '旁白', txt: '三座路標在春風中同時綻放耀眼金光，迷霧守護者化為滿天星雨消散！西奧尼會議岩上響起響徹雲霄的幼童軍大吼聲——DYB！DOB！' },
           { av: '🐻', sp: '棕熊 伯魯', txt: '「恭喜你完成全部 12 篇《叢林奇談》史詩冒險！你已經從剛入團的小狼，蛻變為準備升上童軍團的傳奇小狼！」' },
           { av: '🐆', sp: '黑豹 巴希拉', txt: '「記得點開『📖 完整故事書』細細回味這 12 篇故事，也別忘了領取屬於你的專屬幼童軍榮譽證書——祝你好狩獵（Good Hunting）！」' }
         ]
@@ -967,28 +968,28 @@
       },
       fitness: {
         id: 'fitness', icon: '🏃', name: '體能天賦', trackName: '健身類技能樹',
-        perkDesc: '自由移動與星火遠征移速 +14%、最大 HP +20',
+        perkDesc: '自由移動與路標遠征移速 +14%、最大 HP +20',
         badges: [
           { id: 'fit-1', tier: 1, col: 1, req: [], icon: '💪', name: '體適能運動技能章', desc: '立定跳遠、仰臥起坐與跑走達標', boostLabel: '最大 HP +25・勇氣攻擊 +3', effect: { maxHp: 25, atk: 3 } },
-          { id: 'fit-2', tier: 2, col: 0, req: ['fit-1'], icon: '⚽', name: '球類運動技能章', desc: '會打兩種以上球類並懂計分方式', boostLabel: '星火射速 +12%・星火傷害 +4', effect: { atkRatePct: 0.12, starfireDmg: 4 } },
+          { id: 'fit-2', tier: 2, col: 0, req: ['fit-1'], icon: '⚽', name: '球類運動技能章', desc: '會打兩種以上球類並懂計分方式', boostLabel: '火把射速 +12%・火把傷害 +4', effect: { atkRatePct: 0.12, starfireDmg: 4 } },
           { id: 'fit-3', tier: 2, col: 2, req: ['fit-1'], icon: '🎒', name: '旅行技能章', desc: '口頭報告行程並記錄鄉土自然生態', boostLabel: '探索移速 +10%・定向導引 +2秒', effect: { moveSpeedPct: 0.10, compassSec: 2 } },
           { id: 'fit-4', tier: 3, col: 0, req: ['fit-2'], icon: '🪀', name: '民俗體育運動技能章', desc: '踩高蹺、打陀螺或滾鐵環挑戰', boostLabel: '暴擊率 +15%・結繩判定放寬', effect: { critChance: 0.15, knotForgive: 8 } },
           { id: 'fit-5', tier: 3, col: 1, req: ['fit-2', 'fit-3'], icon: '🏊', name: '游泳技能章', desc: '熟悉水上自救常識並能潛水 10 秒', boostLabel: '智慧防禦 +5・受擊無敵 +0.35秒', effect: { def: 5, invulnBonus: 0.35 } },
-          { id: 'fit-6', tier: 3, col: 2, req: ['fit-3'], icon: '🚲', name: '自行車技能章', desc: '正確騎乘、調椅墊、打氣與上油保養', boostLabel: '星火遠征移速 +12%・探索移速 +5%', effect: { beaconSpeedPct: 0.12, moveSpeedPct: 0.05 } },
+          { id: 'fit-6', tier: 3, col: 2, req: ['fit-3'], icon: '🚲', name: '自行車技能章', desc: '正確騎乘、調椅墊、打氣與上油保養', boostLabel: '路標遠征移速 +12%・探索移速 +5%', effect: { beaconSpeedPct: 0.12, moveSpeedPct: 0.05 } },
           { id: 'fit-7', tier: 4, col: 0, req: ['fit-4'], icon: '🎲', name: '休閒活動技能章', desc: '能主持 5 種遊戲並帶領唱跳 3 首歌', boostLabel: '狼群大招 +25%・金氏觀察 +1.5秒', effect: { skillMult: 0.25, kimTimeBonus: 1500 } },
           { id: 'fit-8', tier: 4, col: 1, req: ['fit-5'], icon: '💃', name: '舞蹈技能章', desc: '學會 6 種基本舞步並完整跳完 2 支舞', boostLabel: '技能冷卻 -15%・繩結定身 +1.0秒', effect: { cdRedPct: 0.15, ropeFreeze: 1.0 } },
-          { id: 'fit-9', tier: 4, col: 2, req: ['fit-6'], icon: '🤸', name: '體操技能章', desc: '領導健身操並完成單槓或墊上運動', boostLabel: '最大 HP +30・星火射程 +55', effect: { maxHp: 30, starfireRange: 55 } }
+          { id: 'fit-9', tier: 4, col: 2, req: ['fit-6'], icon: '🤸', name: '體操技能章', desc: '領導健身操並完成單槓或墊上運動', boostLabel: '最大 HP +30・火把射程 +55', effect: { maxHp: 30, starfireRange: 55 } }
         ]
       },
       craft: {
         id: 'craft', icon: '🎨', name: '巧手天賦', trackName: '技巧類技能樹',
-        perkDesc: '戰鬥與星火傷害 +5、所有主動技能冷卻 -15%',
+        perkDesc: '戰鬥與火把傷害 +5、所有主動技能冷卻 -15%',
         badges: [
-          { id: 'crf-1', tier: 1, col: 1, req: [], icon: '🖌️', name: '繪畫技能章', desc: '能素描寫生並創作 3 幅以上連環漫畫', boostLabel: '星火傷害 +6・金氏觀察 +1.5秒', effect: { starfireDmg: 6, kimTimeBonus: 1500 } },
+          { id: 'crf-1', tier: 1, col: 1, req: [], icon: '🖌️', name: '繪畫技能章', desc: '能素描寫生並創作 3 幅以上連環漫畫', boostLabel: '火把傷害 +6・金氏觀察 +1.5秒', effect: { starfireDmg: 6, kimTimeBonus: 1500 } },
           { id: 'crf-2', tier: 2, col: 0, req: ['crf-1'], icon: '🎵', name: '音樂技能章', desc: '讀五線譜、演奏樂器並辨識 5 種音色', boostLabel: '技能冷卻 -10%・狼群大招 +15%', effect: { cdRedPct: 0.10, skillMult: 0.15 } },
           { id: 'crf-3', tier: 2, col: 2, req: ['crf-1'], icon: '🏗️', name: '模型技能章', desc: '親手製作兩種以上手工藝與動物房屋模型', boostLabel: '繩結束縛 +14 傷・智慧防禦 +4', effect: { ropeDmg: 14, def: 4 } },
           { id: 'crf-4', tier: 3, col: 0, req: ['crf-2'], icon: '🦜', name: '口技技能章', desc: '維妙維肖模仿 5 種以上動物叫聲', boostLabel: '繩結定身 +1.2秒・敵傷減免 3 點', effect: { ropeFreeze: 1.2, enemyDmgRed: 3 } },
-          { id: 'crf-5', tier: 3, col: 1, req: ['crf-2', 'crf-3'], icon: '✍️', name: '書法技能章', desc: '說出「永」字八法並以毛筆臨帖', boostLabel: '暴擊率 +18%・星火射速 +10%', effect: { critChance: 0.18, atkRatePct: 0.10 } },
+          { id: 'crf-5', tier: 3, col: 1, req: ['crf-2', 'crf-3'], icon: '✍️', name: '書法技能章', desc: '說出「永」字八法並以毛筆臨帖', boostLabel: '暴擊率 +18%・火把射速 +10%', effect: { critChance: 0.18, atkRatePct: 0.10 } },
           { id: 'crf-6', tier: 3, col: 2, req: ['crf-3'], icon: '🎤', name: '歌詠技能章', desc: '正確發聲並唱出幼童軍與一般歌曲各 5 首', boostLabel: '急救與蜂蜜 +12・點亮路標 +8 HP', effect: { healBonus: 12, honeyHeal: 12, signpostHeal: 8 } },
           { id: 'crf-7', tier: 4, col: 0, req: ['crf-4'], icon: '🪙', name: '收集技能章', desc: '收集同類物品 50 種以上並整理介紹', boostLabel: '經驗磁鐵 +65・秘寶箱額外 +2 攻防', effect: { xpMagnet: 65, lootBonus: 2 } },
           { id: 'crf-8', tier: 4, col: 1, req: ['crf-5'], icon: '💻', name: '資訊技能章', desc: '善用數位工具查地圖天氣與整理資料', boostLabel: '探索視野 +60・定向導引 +3秒', effect: { visionBonus: 60, compassSec: 3 } },
@@ -1006,11 +1007,11 @@
         { q: '擔任社區「嚮導」帶路時，最重要的基本準備是什麼？', opts: ['事先熟悉路線與附近郵局、醫院、警局位置', '邊走邊猜方向就好', '只記得自己家門口'], ans: 0 },
         { q: '帶隊行走時，發現後方有夥伴走得比較慢，嚮導應該怎麼做？', opts: ['放慢腳步並回頭照顧最慢的夥伴', '自己先衝到終點', '叫他不要跟了'], ans: 0 }
       ]},
-      'svc-2': { mg: 'beacon', mgLabel: '星火路標清障（點亮 2 座路標）', qs: [
+      'svc-2': { mg: 'beacon', mgLabel: '路標清障（點亮 2 座路標）', qs: [
         { q: '下列哪一項最符合「環保技能章」的精神？', opts: ['把廢棄紙箱或寶特瓶改造成玩具與教具', '用完飲料杯隨手丟草叢', '沒用完的紙直接揉掉'], ans: 0 },
         { q: '化學清潔劑或廢電池如果隨意丟棄，會造成什麼問題？', opts: ['污染土壤與水源，危害動植物生態', '讓花草長得更快', '完全沒有影響'], ans: 0 }
       ]},
-      'svc-3': { mg: 'beacon', mgLabel: '星火安全護衛（點亮 2 座路標）', qs: [
+      'svc-3': { mg: 'beacon', mgLabel: '路標安全護衛（點亮 2 座路標）', qs: [
         { q: '過馬路時遇到紅綠燈與斑馬線，正確的交通安全守則是？', opts: ['走斑馬線、綠燈亮起後仍先左右察看來車', '紅燈沒車就直接跑過去', '邊低頭看手機邊過馬路'], ans: 0 },
         { q: '看到「三角形紅框白底」的交通標誌，通常代表什麼意思？', opts: ['警告標誌（提醒前方有危險或學校注意）', '可以免費停車', '前面有夜市'], ans: 0 }
       ]},
@@ -1030,16 +1031,16 @@
         { q: '修護壞掉的玩具或使用工具製作日用品時，第一原則是？', opts: ['確認工具安全用法並保護雙手與眼睛', '拿著剪刀邊跑邊剪', '壞掉直接買新的就好'], ans: 0 },
         { q: '完成勞作或自造體驗課程後，最後一定要做哪件事？', opts: ['把工具歸位並把桌面碎屑整理乾淨', '把剪刀留在椅子上', '直接離開教室'], ans: 0 }
       ]},
-      'svc-8': { mg: 'beacon', mgLabel: '淨山星火守護（點亮 2 座路標）', qs: [
+      'svc-8': { mg: 'beacon', mgLabel: '淨山路標守護（點亮 2 座路標）', qs: [
         { q: '參加淨灘、淨山或社區打掃義工服務時，正確態度是？', opts: ['不求回報、主動分工並注意自身安全', '只在拍照時拿一下垃圾袋', '把垃圾踢進水溝藏起來'], ans: 0 },
         { q: '在圖書館或醫院擔任小小服務員時，哪項行為最得體？', opts: ['輕聲細語、禮貌引導並把書本歸位', '在走廊奔跑嬉戲', '隨便翻動別人的東西'], ans: 0 }
       ]},
       // 🏃 健身類 (9)
-      'fit-1': { mg: 'beacon', mgLabel: '體適能星火衝刺（點亮 2 座路標）', qs: [
+      'fit-1': { mg: 'beacon', mgLabel: '體適能路標衝刺（點亮 2 座路標）', qs: [
         { q: '進行立定跳遠、仰臥起坐等體適能測驗前，一定要先做什麼？', opts: ['充分暖身伸展並檢查鞋帶與場地安全', '完全不暖身直接全力衝刺', '喝三大杯冰飲料'], ans: 0 },
         { q: '想要提升體適能表現，最好的習慣是？', opts: ['每週規律運動至少 3 次並循序漸進', '考前一天熬夜狂練', '整天坐著不動'], ans: 0 }
       ]},
-      'fit-2': { mg: 'beacon', mgLabel: '敏捷星火走位（點亮 2 座路標）', qs: [
+      'fit-2': { mg: 'beacon', mgLabel: '敏捷路標走位（點亮 2 座路標）', qs: [
         { q: '參加球類運動比賽時，最重要的運動家精神是？', opts: ['遵守規則、尊重裁判並與隊友合作', '輸了就生氣摔球', '為了贏球故意推人'], ans: 0 },
         { q: '打完球類運動全身流汗後，應該先做什麼？', opts: ['做緩和伸展、擦乾汗水並適度補充水分', '立刻吹強冷氣不擦汗', '馬上趴在地上睡覺'], ans: 0 }
       ]},
@@ -1051,7 +1052,7 @@
         { q: '練習踩高蹺、打陀螺或滾鐵環等民俗體育時，要注意什麼？', opts: ['選擇空曠平坦場地，避免打到或撞到旁人', '在馬路中間練習', '對著同學臉上甩陀螺'], ans: 0 },
         { q: '練習民俗體育一開始一直失敗，小狼應該怎麼面對？', opts: ['調整握法重心、多練幾次不放棄', '試一次不行就放棄', '怪器材不好'], ans: 0 }
       ]},
-      'fit-5': { mg: 'beacon', mgLabel: '水域自救星火（點亮 2 座路標）', qs: [
+      'fit-5': { mg: 'beacon', mgLabel: '水域自救路標（點亮 2 座路標）', qs: [
         { q: '看到有人溺水時，幼童軍記住「叫、叫、伸、拋、划」的第一步是？', opts: ['大聲呼救並立刻請大人打 119，絕不貿然下水', '自己馬上跳下水拉人', '在旁邊看熱鬧'], ans: 0 },
         { q: '下水游泳前，下列哪項安全常識最正確？', opts: ['先做暖身操、淋浴適應水溫，不在無人看顧處戲水', '剛吃飽飯立刻跳進深水區', '把泳池邊當跑道衝刺'], ans: 0 }
       ]},
@@ -1461,6 +1462,70 @@
     // 4. RPG 劇情對話系統
     // =========================================================================
     let dlgFinalLabel = '進入挑戰 ⚔️';
+    let dlgChoiceDone = true;
+
+    // 🐾 小狼抉擇：每篇遇到角色時，選出符合幼童軍規律的行動
+    const STORY_CHOICES = [
+      { av: '🐺', sp: '老狼王 阿克拉', q: '新來的小狼，在狼群大會上你會怎麼做？', ok: '行狼禮，大聲說「我願盡力」', no: ['躲在狼媽媽後面不出聲', '對邪漢扮鬼臉'], good: '說得好！這就是小狼的諾言！', hint: '想想看，幼童軍諾言的第一句是什麼？' },
+      { av: '🐻', sp: '棕熊 伯魯', q: '猴群說：「跟我們走就不用守規矩！」你會怎麼做？', ok: '記住叢林規律，不跟陌生的猴群走', no: ['好啊，不用守規矩好好玩', '偷偷跟去，不告訴任何人'], good: '對！守規律才能保護自己！', hint: '伯魯教過你，叢林的規律是用來保護你的喔。' },
+      { av: '🐆', sp: '黑豹 巴希拉', q: '你被困在冷洞裡，要怎麼求救？', ok: '用叢林通用語，請飛鳶帶口訊給卡阿', no: ['一直哭，什麼都不說', '自己從高牆跳下去'], good: '聰明！正確傳遞口訊，夥伴就能來救你！', hint: '想想看，誰可以飛到外面幫你傳話？' },
+      { av: '🐘', sp: '大象 哈帝', q: '大旱災時大家都要喝水，在水邊應該怎麼做？', ok: '大家輪流喝水，不在水邊打架', no: ['搶最好的位置先喝', '把水弄髒，不讓別人喝'], good: '沒錯！這就是「水邊停戰」的規律！', hint: '水很少的時候，怎麼做大家才都喝得到？' },
+      { av: '🐺', sp: '毛克利', q: '從村莊拿到「紅花」（火）時，最重要的是什麼？', ok: '小心用火，要有大人陪同', no: ['拿著火到處揮舞', '把火丟進草叢看看'], good: '很好！用火一定要注意安全！', hint: '火很危險，用的時候需要誰在旁邊？' },
+      { av: '👩', sp: '美修娃', q: '住在村莊裡，你可以怎麼幫忙大家？', ok: '主動放牧水牛、幫忙做家事', no: ['整天躺著等吃飯', '拿別人的東西不問'], good: '謝謝你！日行一善就是這樣！', hint: '童軍每天都要做一件什麼事？' },
+      { av: '🐺', sp: '灰狼兄弟', q: '要南北夾攻邪漢，第一步要先做什麼？', ok: '看清楚方位，和夥伴分工合作', no: ['一個人先衝進峽谷', '不管方向到處亂跑'], good: '對！認清方位、團隊合作就能成功！', hint: '要夾攻，大家得先知道自己要去哪個方向。' },
+      { av: '🐺', sp: '毛克利', q: '有人在村子裡說你的壞話，你會怎麼做？', ok: '保持冷靜，誠實把事情說清楚', no: ['也去說他的壞話', '生氣地動手打人'], good: '你真勇敢！誠實和冷靜最有力量！', hint: '童軍規律說：不說謊話。誠實會怎麼做呢？' },
+      { av: '🐍', sp: '白眼鏡蛇', q: '這根閃亮的象牙鉤是寶物，你要怎麼做？', ok: '不貪心，把它放回原來的地方', no: ['偷偷帶回家', '拿去跟大家炫耀'], good: '了不起！不貪心的小狼最可靠！', hint: '這不是你的東西喔，應該怎麼處理？' },
+      { av: '🐍', sp: '大蟒蛇 卡阿', q: '紅狗大軍的數量好多，要怎麼打贏？', ok: '動腦想計畫，全隊分工合作', no: ['一個人直接衝過去', '嚇得逃跑，丟下大家'], good: '太棒了！智慧和團隊就是最強的武器！', hint: '一個人打不贏的時候，可以找誰一起想辦法？' },
+      { av: '🐺', sp: '老狼王 阿克拉', q: '我要離開了，你會怎麼帶領你的小隊？', ok: '以身作則，照顧每一個夥伴', no: ['只跟好朋友一起玩', '命令大家都要聽我的'], good: '這就是好領袖！我放心了……', hint: '好的小隊長，會怎麼對待每一位隊員？' },
+      { av: '🐻', sp: '伯魯與巴希拉', q: '就要跨過升團線了，你想對狼群說什麼？', ok: '謝謝大家，我會繼續盡力', no: ['終於不用再守規律了', '什麼都不說就走了'], good: '一日童軍，一世童軍！我們以你為榮！', hint: '幼童軍的銘言是「竭盡所能」，你會怎麼說？' }
+    ];
+    function storyChoiceLine(idx) {
+      const c = STORY_CHOICES[idx];
+      return c ? { av: c.av, sp: c.sp, txt: `🐾 小狼抉擇：${c.q}`, choice: c } : null;
+    }
+
+    function renderDialogueChoice(line) {
+      const box = document.getElementById('dlg-choices');
+      const nextBtn = document.getElementById('dlg-next');
+      const c = line.choice;
+      const q = shuffleQ({ q: c.q, opts: [c.ok, ...c.no], ans: 0 });
+      dlgChoiceDone = false;
+      let firstTry = true;
+      nextBtn.classList.add('hidden');
+      box.classList.remove('hidden');
+      box.innerHTML = q.opts.map((o, i) => `
+        <button data-dchoice="${i}" type="button" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-amber-400/25 border-2 border-amber-300/50 text-sm font-bold text-emerald-50 active:scale-[0.99] transition">${['A', 'B', 'C'][i]}. ${o}</button>`).join('');
+      Speech.say(readQ(c.q, q.opts));
+      box.onclick = (e) => {
+        const btn = e.target.closest('[data-dchoice]');
+        if (!btn || dlgChoiceDone) return;
+        const pick = parseInt(btn.getAttribute('data-dchoice'), 10);
+        const textEl = document.getElementById('dlg-text');
+        if (pick === q.ans) {
+          dlgChoiceDone = true;
+          Sfx.win();
+          btn.classList.add('bg-emerald-500/40', 'border-emerald-300');
+          box.querySelectorAll('[data-dchoice]').forEach(b => { b.disabled = true; });
+          let reward = '';
+          if (firstTry) {
+            state.honey = Math.min(6, state.honey + 1);
+            reward = '（第一次就選對，獲得 🍯 森林蜂蜜 +1）';
+            updateHud();
+            saveProgress();
+          }
+          textEl.textContent = `✅ ${c.good}${reward}`;
+          Speech.say(c.good);
+          nextBtn.classList.remove('hidden');
+        } else {
+          firstTry = false;
+          Sfx.hit();
+          btn.classList.add('bg-rose-500/35', 'border-rose-400');
+          btn.disabled = true;
+          textEl.textContent = `🤔 ${c.hint}再選一次看看！`;
+          Speech.say(c.hint);
+        }
+      };
+    }
     function startDialogue(lines, onFinish, finalLabel = '進入挑戰 ⚔️') {
       mode = 'dialogue';
       dlgFinalLabel = finalLabel;
@@ -1480,16 +1545,23 @@
 
     function renderDialogueLine() {
       const line = dlgQueue[dlgIdx];
+      const choiceBox = document.getElementById('dlg-choices');
+      choiceBox.classList.add('hidden');
+      choiceBox.innerHTML = '';
+      document.getElementById('dlg-next').classList.remove('hidden');
+      dlgChoiceDone = true;
       document.getElementById('dlg-avatar').textContent = line.av;
       document.getElementById('dlg-speaker').textContent = line.sp;
       document.getElementById('dlg-text').textContent = line.txt;
       document.getElementById('dlg-page').textContent = `${dlgIdx + 1} / ${dlgQueue.length}`;
-      Speech.say(`${line.sp}說：${line.txt}`);
+      if (line.choice) renderDialogueChoice(line);
+      else Speech.say(`${line.sp}說：${line.txt}`);
       document.getElementById('dlg-next').textContent = dlgIdx < dlgQueue.length - 1 ? '下一句 ▶' : dlgFinalLabel;
       Sfx.blip();
     }
 
     document.getElementById('dlg-next').addEventListener('click', () => {
+      if (!dlgChoiceDone) return; // 還沒做出抉擇
       if (dlgIdx < dlgQueue.length - 1) {
         dlgIdx++;
         renderDialogueLine();
@@ -1524,7 +1596,7 @@
     const SVG_FLOWER = `<svg viewBox="0 0 36 36" class="w-6 h-6"><circle cx="18" cy="12" r="4" fill="#f472b6"/><circle cx="12" cy="17" r="4" fill="#f472b6"/><circle cx="24" cy="17" r="4" fill="#f472b6"/><circle cx="15" cy="23" r="4" fill="#f472b6"/><circle cx="21" cy="23" r="4" fill="#f472b6"/><circle cx="18" cy="18" r="3.5" fill="#fde047"/></svg>`;
     const SVG_CLOUD = `<svg viewBox="0 0 36 36" class="w-7 h-7 opacity-40"><circle cx="13" cy="20" r="6" fill="#4ade80"/><circle cx="21" cy="18" r="7" fill="#4ade80"/><circle cx="26" cy="21" r="5" fill="#4ade80"/></svg>`;
 
-    // 擴充 24 題幼童軍進程與技能章大題庫 (每次問答隨機抽 4 題)
+    // 擴充 24 題幼童軍進程與技能章大題庫 (每次問答 3 題)
     const CUB_QUESTION_POOL = [
       { tag: '幼童軍進程', q: '幼童軍的「晉級獸章」由低到高依序是哪四級？', opts: ['羚羊 → 狼 → 鹿 → 豹', '狼 → 鹿 → 豹 → 獅', '兔 → 狐 → 狼 → 熊'], ans: 0 },
       { tag: '剛入團禮節', q: '幼童軍敬禮與握手時，要使用哪一隻手互相握手？', opts: ['右手', '左手（代表心連心）', '雙手合十'], ans: 1 },
@@ -1554,7 +1626,7 @@
 
 
     // =========================================================================
-    // 5. 自由移動森林探索系統（虛擬搖桿 + 岔路小徑 + 星火路標 + 迷霧探索）
+    // 5. 自由移動森林探索系統（虛擬搖桿 + 岔路小徑 + 路標 + 迷霧探索）
     // =========================================================================
     const forestCanvas = document.getElementById('forest-canvas');
     const fCtx = forestCanvas.getContext('2d');
@@ -1977,7 +2049,8 @@
         stopForestLoop();
         Sfx.coin();
         const st = STAGES[state.stageIdx];
-        startDialogue(st.intro, () => startEncounter());
+        const choiceLine = storyChoiceLine(state.stageIdx);
+        startDialogue(choiceLine ? [...st.intro, choiceLine] : st.intro, () => startEncounter());
       }
     }
 
@@ -1994,7 +2067,7 @@
       const camX = Math.max(0, Math.min(FOREST_WORLD - vw, fd.player.x - vw / 2));
       const camY = Math.max(0, Math.min(FOREST_WORLD - vh, fd.player.y - vh / 2));
 
-      // 1. 森林草地背景與斜向微格紋（星火遠征風格）
+      // 1. 森林草地背景與斜向微格紋（探險風格）
       fCtx.fillStyle = '#24523b';
       fCtx.fillRect(0, 0, w, h);
 
@@ -2055,7 +2128,7 @@
         fCtx.fillText(fb.text, bx, fb.y - 6);
       }
 
-      // 5. 星火路標（發光菱形＋火光）
+      // 5. 路標（發光菱形＋火光）
       const pulse = 0.5 + 0.5 * Math.sin(ts / 260);
       for (const sp of fd.signposts) {
         fCtx.save();
@@ -2296,7 +2369,7 @@
         if (!g.lvOk) missingParts.push(`等級需達 Lv.${g.gate.minLv}（目前 Lv.${state.level}）`);
         if (!g.rankOk) missingParts.push(`【${g.gate.reqRank}】進程需全部通過（目前 ${g.doneCnt}/${g.totalCnt}）`);
         const msg = `你目前仍停留在「${curRk}」，尚無法進入第 ${idx + 1} 篇故事線！\n解鎖條件：${missingParts.join('；')}。`;
-        const btnTxt = !g.rankOk ? `📘 前往完成【${g.gate.reqRank}】進程核章` : `🎮 去小遊戲鍛鍊升等 (+1 Lv)`;
+        const btnTxt = !g.rankOk ? `📘 前往完成【${g.gate.reqRank}】進程核章` : `🎮 去團康鍛鍊升等 (+1 Lv)`;
         showOverlay('🔒', `故事線進程關卡（第 ${idx + 1} 篇）`, `需通過【${g.gate.reqRank}】才能繼續！`, msg, btnTxt, () => {
           overlay.classList.add('hidden');
           if (!g.rankOk) {
@@ -2312,7 +2385,7 @@
     }
 
     // =========================================================================
-    // 5B. 4 種幼童軍互動小遊戲引擎（星火路標 / 結繩步驟 / 八方位羅盤 / 金氏記憶）
+    // 5B. 4 種幼童軍互動團康引擎（路標 / 結繩步驟 / 八方位羅盤 / 金氏記憶）
     // =========================================================================
     const mgCanvas = document.getElementById('mg-canvas');
     const mgCtx = mgCanvas.getContext('2d');
@@ -2365,7 +2438,7 @@
       if (wasPractice) {
         if (!Array.isArray(state.arcadeWins)) state.arcadeWins = [];
         let bonusTxt = '';
-        gainLevels(1, '小遊戲鍛鍊');
+        gainLevels(1, '團康鍛鍊');
         bonusTxt = ` ⬆️ 鍛鍊升級至 Lv.${state.level}！`;
         if (playedKind && !state.arcadeWins.includes(playedKind)) {
           state.arcadeWins.push(playedKind);
@@ -2376,12 +2449,12 @@
         }
         mode = 'title';
         const showArcadeDone = () => {
-          showOverlay('🏆', '小遊戲練習完成', '挑戰成功！', (winMsg || '太厲害了！你已經熟練掌握這項幼童軍互動技能！') + bonusTxt, '再玩其他小遊戲 🎮', () => {
+          showOverlay('🏆', '團康練習完成', '挑戰成功！', (winMsg || '太厲害了！你已經熟練掌握這項幼童軍互動技能！') + bonusTxt, '再玩其他團康 🎮', () => {
             overlay.classList.add('hidden');
             openArcadeModal();
           });
         };
-        if (!maybeTriggerRandomBadgeEvent(0.35, '小遊戲鍛鍊獲勝時', showArcadeDone)) {
+        if (!maybeTriggerRandomBadgeEvent(0.35, '團康鍛鍊獲勝時', showArcadeDone)) {
           showArcadeDone();
         }
       } else {
@@ -2440,19 +2513,19 @@
       }
     }
 
-    // --- 小遊戲 1：星火路標遠征（類《星火遠征》即時生存＋星火成長三選一＋迷霧守護者 Boss 戰）---
+    // --- 團康 1：路標遠征（類《路標遠征》即時生存＋營火成長三選一＋迷霧守護者 Boss 戰）---
     const STARFIRE_UPGRADES = [
-      { id: 'dmg', icon: '🔥', name: '星火強擊', desc: '自動星火攻擊傷害 +6', apply: (s) => { s.dmgBonus += 6; } },
+      { id: 'dmg', icon: '🔥', name: '火把強擊', desc: '自動火把攻擊傷害 +6', apply: (s) => { s.dmgBonus += 6; } },
       { id: 'spd', icon: '👟', name: '疾行步伐', desc: '小狼移動速度提升 14%', apply: (s) => { s.speedMult *= 1.14; } },
-      { id: 'rate', icon: '⚡', name: '快速整備', desc: '星火攻擊速度提升 18%', apply: (s) => { s.atkInterval = Math.max(0.28, s.atkInterval * 0.82); } },
+      { id: 'rate', icon: '⚡', name: '快速整備', desc: '火把攻擊速度提升 18%', apply: (s) => { s.atkInterval = Math.max(0.28, s.atkInterval * 0.82); } },
       { id: 'hp', icon: '❤️', name: '堅韌意志', desc: '最大體力與目前體力 +20', apply: (s) => { s.player.maxHp += 20; s.player.hp += 20; if (s.liveHp) { state.maxHp += 20; state.hp = s.player.hp; updateHud(); } } },
       { id: 'heal', icon: '🍯', name: '補給整備', desc: '立即恢復 35 點體力', apply: (s) => { s.player.hp = Math.min(s.player.maxHp, s.player.hp + 35); if (s.liveHp) { state.hp = s.player.hp; updateHud(); } } },
       { id: 'cd', icon: '🧭', name: '生存技巧', desc: '定向／繩結／急救冷卻縮短 18%', apply: (s) => { s.cdMult *= 0.82; } }
     ];
 
     function initBeaconGame() {
-      document.getElementById('mg-title').textContent = '🔥 星火路標遠征';
-      document.getElementById('mg-sub').textContent = '點亮 3 座路標、吸取星火升級並擊敗迷霧守護者！';
+      document.getElementById('mg-title').textContent = '🔥 路標遠征';
+      document.getElementById('mg-sub').textContent = '點亮 3 座路標、收集能量升級並擊敗迷霧守護者！';
       document.getElementById('mg-progress').textContent = '路標 0 / 3';
 
       const W = 840;
@@ -2495,7 +2568,7 @@
       mgState = {
         W,
         paused: false,
-        // 練習場與技能章試煉用獨立的體力，不會扣到主線 HP；只有主線篇章的星火遠征才會同步
+        // 練習場與技能章試煉用獨立的體力，不會扣到主線 HP；只有主線篇章的路標遠征才會同步
         liveHp: !mgPracticeMode,
         player: { x: 160, y: W - 160, r: 18, hp: mgPracticeMode ? effB.maxHp : Math.min(state.hp, effB.maxHp), maxHp: effB.maxHp, invuln: 0 },
         beacons,
@@ -2551,7 +2624,7 @@
       mgJoy.active = false; mgJoy.vx = 0; mgJoy.vy = 0;
       Sfx.win();
       const modal = document.getElementById('upgrade-modal');
-      document.getElementById('upgrade-title').textContent = `星火成長 Lv.${s.xpLv}！選一項童軍強化`;
+      document.getElementById('upgrade-title').textContent = `營火成長 Lv.${s.xpLv}！選一項童軍強化`;
       const picks = [...STARFIRE_UPGRADES].sort(() => Math.random() - 0.5).slice(0, 3);
       const box = document.getElementById('upgrade-choices');
       box.innerHTML = picks.map((u, idx) => `
@@ -2666,7 +2739,7 @@
         }
       }
 
-      // 自動星火攻擊（含 Boss）
+      // 自動火把攻擊（含 Boss）
       s.atkCd -= dt;
       if (s.atkCd <= 0) {
         let target = null, bestD = s.starfireRange || 205;
@@ -2688,7 +2761,7 @@
         }
       }
 
-      // 更新星火子彈
+      // 更新火把火球
       for (let i = s.bolts.length - 1; i >= 0; i--) {
         const b = s.bolts[i];
         b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
@@ -2710,7 +2783,7 @@
         if (hit || b.life <= 0) s.bolts.splice(i, 1);
       }
 
-      // 吸取星火經驗球
+      // 吸取能量球
       for (let i = s.orbs.length - 1; i >= 0; i--) {
         const orb = s.orbs[i];
         const dx = s.player.x - orb.x, dy = s.player.y - orb.y, d = Math.hypot(dx, dy);
@@ -2773,7 +2846,7 @@
       if (s.boss) {
         const boss = s.boss;
         if (boss.hp <= 0) {
-          finishMiniGame(`你點亮 3 座路標、達成星火 Lv.${s.xpLv}，並成功擊敗【迷霧守護者】！`);
+          finishMiniGame(`你點亮 3 座路標、達成能量 Lv.${s.xpLv}，並成功擊敗【迷霧守護者】！`);
           return;
         }
         if (boss.frozen > 0) {
@@ -2849,7 +2922,7 @@
               s.compassTimer = 4.0;
               document.getElementById('mg-progress').textContent = '👑 Boss戰';
               document.getElementById('mg-sub').textContent = '⚠️ 迷霧守護者現身！閃避紫球並擊敗它！';
-              showMgToast('⚠️ 迷霧守護者現身！用繩結束縛與星火擊敗它！');
+              showMgToast('⚠️ 迷霧守護者現身！用繩結束縛與火把擊敗它！');
             }
           }
         }
@@ -2858,7 +2931,7 @@
 
     function drawBeaconGame(ts) {
       const s = mgState;
-      if (!s) return; // 小遊戲已結束（例如剛過關），不再畫最後一格
+      if (!s) return; // 團康已結束（例如剛過關），不再畫最後一格
       const { w, h, dpr } = resizeCanvasToDisplay(mgCanvas);
       mgCtx.save();
       mgCtx.scale(dpr, dpr);
@@ -2887,7 +2960,7 @@
         mgCtx.beginPath(); mgCtx.arc(ob.x - 4, ob.y - 5, ob.r * 0.62, 0, Math.PI * 2); mgCtx.fill();
       }
 
-      // 星火路標
+      // 路標
       const pulse = 0.5 + 0.5 * Math.sin(ts / 220);
       for (const b of s.beacons) {
         mgCtx.save();
@@ -2904,7 +2977,7 @@
         mgCtx.restore();
       }
 
-      // 經驗星火球
+      // 經驗火球
       for (const orb of s.orbs) {
         mgCtx.fillStyle = '#fef08a';
         mgCtx.beginPath(); mgCtx.arc(orb.x, orb.y, 6, 0, Math.PI * 2); mgCtx.fill();
@@ -2990,7 +3063,7 @@
         mgCtx.beginPath(); mgCtx.arc(sh.x, sh.y, 8, 0, Math.PI * 2); mgCtx.fill(); mgCtx.stroke();
       }
 
-      // 星火子彈
+      // 火把火球
       for (const b of s.bolts) {
         mgCtx.fillStyle = '#fde047';
         mgCtx.beginPath(); mgCtx.arc(b.x, b.y, 6, 0, Math.PI * 2); mgCtx.fill();
@@ -3019,7 +3092,7 @@
 
       mgCtx.restore();
 
-      // 頂部 XP 條（星火成長）
+      // 頂部 XP 條（營火成長）
       mgCtx.fillStyle = 'rgba(0,0,0,0.5)';
       mgCtx.fillRect(10, 10, w - 20, 14);
       mgCtx.fillStyle = '#fbbf24';
@@ -3027,7 +3100,7 @@
       mgCtx.fillStyle = '#ffffff';
       mgCtx.font = 'bold 10px Inter, sans-serif';
       mgCtx.textAlign = 'center';
-      mgCtx.fillText(`星火 Lv.${s.xpLv}（XP ${s.xp}/${s.xpNeed}）`, w / 2, 20);
+      mgCtx.fillText(`能量 Lv.${s.xpLv}（XP ${s.xp}/${s.xpNeed}）`, w / 2, 20);
 
       // Boss 血條
       if (s.boss) {
@@ -3059,7 +3132,7 @@
     document.getElementById('mg-skill-2').addEventListener('click', () => triggerBeaconSkill(1));
     document.getElementById('mg-skill-3').addEventListener('click', () => triggerBeaconSkill(2));
 
-    // --- 小遊戲 2：結繩高手試煉（依序點擊 / 拖曳連結繩節點）---
+    // --- 團康 2：結繩高手試煉（依序點擊 / 拖曳連結繩節點）---
     // 結繩遊戲：每一步都是真正的打結步驟，要依正確順序點選，才算學會這個繩結
     const KNOT_BANK = {
       wolf: [
@@ -3175,7 +3248,7 @@
     // 舊的畫布點擊接口保留為空，避免其他地方呼叫時出錯
     function handleKnotPointer() {}
 
-    // --- 小遊戲 3：八方位羅盤定向（即時信號彈夾攻）---
+    // --- 團康 3：八方位羅盤定向（即時信號彈夾攻）---
     const COMPASS_DIRS = [
       { label: '北', code: 'N', angle: -Math.PI / 2 },
       { label: '東北', code: 'NE', angle: -Math.PI / 4 },
@@ -3333,7 +3406,7 @@
       }
     });
 
-    // --- 小遊戲 4：金氏遊戲與營火裝備記憶（3 回合）---
+    // --- 團康 4：金氏遊戲與營火裝備記憶（3 回合）---
     const KIM_ITEMS = [
       { id: 'compass', icon: '🧭', name: '指北針' },
       { id: 'rope', icon: '🪢', name: '童軍繩' },
@@ -3501,7 +3574,7 @@
         quizScore = 0;
         const extras = CUB_QUESTION_POOL.filter(q => !st.questions.some(sq => sq.q === q.q))
           .sort(() => Math.random() - 0.5);
-        activeQuizList = [...st.questions, ...extras].slice(0, 4);
+        activeQuizList = [...st.questions, ...extras].slice(0, 3);
         quizPanel.classList.remove('hidden');
         quizPanel.classList.add('flex');
         renderQuizQuestion();
@@ -3836,7 +3909,7 @@
         if (bSum.atk) activeTags.push(`⚔️ 攻擊+${bSum.atk}`);
         if (bSum.def) activeTags.push(`🛡️ 防禦+${bSum.def}`);
         if (bSum.maxHp) activeTags.push(`❤️ HP+${bSum.maxHp}`);
-        if (bSum.starfireDmg) activeTags.push(`🔥 星火傷+${bSum.starfireDmg}`);
+        if (bSum.starfireDmg) activeTags.push(`🔥 火把傷+${bSum.starfireDmg}`);
         if (bSum.atkRatePct) activeTags.push(`⚡ 射速+${Math.round(bSum.atkRatePct * 100)}%`);
         if (bSum.moveSpeedPct) activeTags.push(`👟 移速+${Math.round(bSum.moveSpeedPct * 100)}%`);
         if (bSum.cdRedPct) activeTags.push(`⏱️ 冷卻-${Math.round(bSum.cdRedPct * 100)}%`);
@@ -4404,7 +4477,7 @@
           desc: `你的天賦決定「${tObj.trackName}」的成長方向！技能章不能一開始就選，而是在探索路標、開寶箱或破關升級時「隨機觸發奇遇考驗」！`,
           tips: [
             '🎲 冒險途中隨機觸發技能章奇遇 → 通過「實作闖關＋2 題專屬問答」就能正式升級！',
-            '⚡ 全部 26 枚技能章各自加強不同能力（移速、視野、星火傷害、暴擊、繩結束縛、冷卻等）！',
+            '⚡ 全部 26 枚技能章各自加強不同能力（移速、視野、火把傷害、暴擊、繩結束縛、冷卻等）！',
             '🌳 隨時可在「🎖️ 榮譽帶 → 🌳 技能章樹」查看你的成長分支與已啟動加成！'
           ]
         },
@@ -4419,12 +4492,12 @@
           ]
         },
         {
-          badge: '步驟 4 / 5・4 款互動小遊戲',
+          badge: '步驟 4 / 5・4 款互動團康',
           icon: '🎮',
           title: '邊玩邊練幼童軍真功夫！',
-          desc: '冒險途中與右上角「🎮 小遊戲」練習場，內建 4 款專屬互動玩法：',
+          desc: '冒險途中與右上角「🎮 團康」練習場，內建 4 款專屬互動玩法：',
           tips: [
-            '🔥 星火路標遠征：自由走位＋自動攻擊＋定向/繩結/急救三技能（鍵盤 1/2/3）打敗迷霧守護者！',
+            '🔥 路標遠征：自由走位＋自動攻擊＋定向/繩結/急救三技能（鍵盤 1/2/3）打敗迷霧守護者！',
             '🪢 結繩步驟・🧭 八方位羅盤・🔍 金氏記憶：每一款都受你的技能章樹加成！'
           ]
         },
@@ -4621,7 +4694,7 @@
         if (typeof cb === 'function') cb();
         else { activeBagTab = 'talent'; openBagModal(); }
       } else {
-        // 結束小遊戲本身，再打開練習場選單（關閉選單後會回到冒險或標題）
+        // 結束團康本身，再打開練習場選單（關閉選單後會回到冒險或標題）
         hideAllPanels();
         mode = 'arcade';
         openArcadeModal();
