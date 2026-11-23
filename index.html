@@ -1398,6 +1398,11 @@
       document.getElementById('act-heal').textContent = `🍯 蜂蜜補血 (${state.honey})`;
     }
 
+    function stageTop() {
+      const sa = document.getElementById('stage-area');
+      if (sa) sa.scrollTop = 0;
+    }
+
     function hideAllPanels() {
       stopForestLoop();
       stopMiniGame();
@@ -1417,6 +1422,7 @@
     const CAMPFIRE_IMG = IMG.campfire;
 
     function showOverlay(icon, chapter, title, sub, btnText, nextAction) {
+      stageTop();
       hideAllPanels();
       const heroEl = document.getElementById('ov-hero-img');
       if (mode === 'title') {
@@ -2530,6 +2536,7 @@
         const dt = Math.min(0.05, (ts - last) / 1000);
         last = ts;
         if (!mgState.paused) stepBeaconGame(dt);
+        if (mode !== 'minigame' || mgKind !== 'beacon' || !mgState) return;
         drawBeaconGame(ts);
         mgRaf = requestAnimationFrame(loop);
       };
@@ -2537,6 +2544,7 @@
     }
 
     function openStarfireUpgrade() {
+      stageTop();
       const s = mgState;
       if (!s || mgKind !== 'beacon') return;
       s.paused = true;
@@ -2816,18 +2824,22 @@
 
       // 檢查 3 座路標修復 → 召喚迷霧守護者 Boss
       if (!s.boss) {
-        let lit = 0;
+        // 先點亮走到的路標，再用「全部已點亮的數量」判斷是否過關
+        // （原本只算到目前這一座之前的路標，反過來的順序點亮會永遠卡在 1/2）
         for (const b of s.beacons) {
-          if (b.lit) { lit++; continue; }
-          if (Math.hypot(s.player.x - b.x, s.player.y - b.y) < 38) {
-            b.lit = true;
-            lit++;
-            s.player.hp = Math.min(s.player.maxHp, s.player.hp + 15);
-            if (s.liveHp) state.hp = s.player.hp;
-            updateHud();
-            Sfx.win();
-            showMgToast(`✨ 成功修復【${b.name}】！(${lit}/${s.beacons.length})`);
-            document.getElementById('mg-progress').textContent = `路標 ${lit} / ${s.beacons.length}`;
+          if (b.lit || Math.hypot(s.player.x - b.x, s.player.y - b.y) >= 38) continue;
+          b.lit = true;
+          s.player.hp = Math.min(s.player.maxHp, s.player.hp + 15);
+          if (s.liveHp) state.hp = s.player.hp;
+          updateHud();
+          Sfx.win();
+          const litNow = s.beacons.filter(x => x.lit).length;
+          showMgToast(`✨ 成功修復【${b.name}】！(${litNow}/${s.beacons.length})`);
+          document.getElementById('mg-progress').textContent = `路標 ${litNow} / ${s.beacons.length}`;
+        }
+        const lit = s.beacons.filter(x => x.lit).length;
+        {
+          {
             if (lit >= s.beacons.length) {
               if (activeBadgeTrial && activeBadgeTrial.stage === 'mg') {
                 finishMiniGame(`實作闖關通過！你成功點亮 ${lit} 座試煉路標！`);
@@ -2846,6 +2858,7 @@
 
     function drawBeaconGame(ts) {
       const s = mgState;
+      if (!s) return; // 小遊戲已結束（例如剛過關），不再畫最後一格
       const { w, h, dpr } = resizeCanvasToDisplay(mgCanvas);
       mgCtx.save();
       mgCtx.scale(dpr, dpr);
@@ -3448,6 +3461,7 @@
     }
 
     function openArcadeModal() {
+      stageTop();
       Sfx.blip();
       arcadeModal.classList.remove('hidden');
       arcadeModal.classList.add('flex');
@@ -4011,6 +4025,7 @@
     }
 
     function openBagModal() {
+      stageTop();
       Sfx.blip();
       document.getElementById('prog-challenge-box').classList.add('hidden');
       renderBagTab();
@@ -4019,6 +4034,7 @@
     }
 
     function openFullStory() {
+      stageTop();
       Sfx.blip();
       const box = document.getElementById('story-content');
       box.innerHTML = STAGES.map((st) => {
@@ -4057,6 +4073,7 @@
       paintGradeOpts();
     }));
     function openSetupModal(onConfirm) {
+      stageTop();
       Sfx.blip();
       const modal = document.getElementById('setup-modal');
       const nameInput = document.getElementById('setup-name');
@@ -4090,6 +4107,7 @@
     }
 
     function openCertModal() {
+      stageTop();
       Sfx.win();
       const modal = document.getElementById('cert-modal');
       const cv = document.getElementById('cert-canvas');
@@ -4184,6 +4202,7 @@
     }
 
     function startBadgeTrial(badge, opts = {}) {
+      stageTop();
       const cfg = BADGE_TRIALS[badge.id] || { mg: 'compass', mgLabel: '八方位羅盤定向（4 次）', qs: [] };
       activeBadgeTrial = { badge, cfg, stage: 'intro', qIdx: 0, onExit: opts.onExit || null };
       bagModal.classList.add('hidden');
@@ -4239,6 +4258,7 @@
     }
 
     function openBadgeTrialQuiz(prevMsg) {
+      stageTop();
       if (!activeBadgeTrial) return;
       const { badge, cfg } = activeBadgeTrial;
       const qs = (cfg.qs && cfg.qs.length) ? cfg.qs : [
@@ -4305,6 +4325,7 @@
     }
 
     function completeBadgeTrialUpgrade() {
+      stageTop();
       if (!activeBadgeTrial) return;
       const { badge, onExit } = activeBadgeTrial;
       activeBadgeTrial = null;
@@ -4453,6 +4474,7 @@
     }
 
     function openTutorialModal(onFinish = null) {
+      stageTop();
       tutStep = 0;
       tutOnFinish = onFinish;
       if (onFinish) overlay.classList.add('hidden');
