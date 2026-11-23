@@ -58,11 +58,11 @@
       <div class="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
         <img data-img="wolf" alt="毛克利小狼" class="w-10 h-10 rounded-2xl object-cover border-2 border-amber-300 shrink-0 shadow-sm" />
         <div class="min-w-0">
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5 whitespace-nowrap">
             <span class="font-black text-sm text-amber-300" id="hud-lv">Lv.1</span>
-            <span class="font-black text-sm truncate" id="hud-rank">剛入團</span>
             <span class="text-xs text-emerald-200 font-bold" id="hud-ch-num">(1/12)</span>
           </div>
+          <div class="font-black text-[11px] leading-tight truncate" id="hud-rank">剛入團</div>
           <div class="flex items-center gap-1 mt-0.5">
             <div class="w-9 h-2 bg-black/40 rounded-full overflow-hidden shrink-0">
               <div id="hud-hp-bar" class="h-full bg-rose-500 transition-all duration-300" style="width: 100%"></div>
@@ -74,7 +74,7 @@
 
       <div class="flex items-center gap-1 shrink-0">
         <button id="btn-arcade" type="button" class="shrink-0 whitespace-nowrap px-2 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/45 border border-emerald-300/60 text-emerald-100 text-[11px] font-black">
-          🎮 試玩
+          🎮<span class="max-[400px]:hidden"> 試玩</span>
         </button>
         <button id="btn-bag" type="button" class="shrink-0 whitespace-nowrap px-2 py-1.5 rounded-lg bg-amber-500/25 hover:bg-amber-500/40 border border-amber-300/60 text-amber-200 text-[11px] font-black">
           🎖️ <span id="bag-count">0/28</span>
@@ -85,10 +85,10 @@
     </header>
 
     <!-- Main RPG Stage -->
-    <div id="stage-area" class="relative flex-1 bg-gradient-to-b from-[#d8f3dc] to-[#95d5b2] flex flex-col justify-between p-4 overflow-y-auto">
+    <div id="stage-area" class="relative flex-1 min-h-0 bg-gradient-to-b from-[#d8f3dc] to-[#95d5b2] flex flex-col justify-between p-3 overflow-y-auto">
       <!-- Free-Movement 2D Forest Exploration Panel (Joystick + Signposts + Branching Trails) -->
-      <div id="map-panel" class="hidden flex-col items-center justify-center gap-2.5 my-auto w-full">
-        <div class="w-full max-w-[388px] flex items-center justify-between gap-2">
+      <div id="map-panel" class="hidden flex-col gap-2 w-full flex-1 min-h-0">
+        <div class="w-full max-w-[460px] mx-auto flex items-center justify-between gap-2 shrink-0">
           <div id="map-quest-hint" class="flex-1 truncate px-3.5 py-1.5 rounded-full bg-[#142e21]/90 border border-amber-300/50 text-xs sm:text-sm font-black text-amber-200 shadow-sm">
             🧭 探索岔路與路標
           </div>
@@ -96,7 +96,7 @@
             🪧 路標 0/2
           </div>
         </div>
-        <div class="relative w-full max-w-[388px] aspect-[5/6] max-h-[500px] rounded-3xl overflow-hidden bg-[#132a1e] border-4 border-amber-300 shadow-2xl">
+        <div class="relative w-full max-w-[460px] mx-auto flex-1 min-h-[240px] rounded-3xl overflow-hidden bg-[#132a1e] border-4 border-amber-300 shadow-2xl">
           <canvas id="forest-canvas" style="touch-action: none;" class="w-full h-full block"></canvas>
           <div id="map-toast" style="background: #142e21;" class="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 max-w-[92%] truncate px-3.5 py-1.5 rounded-full border-2 border-amber-300 text-amber-200 text-xs font-black shadow-xl opacity-0 transition-opacity duration-300"></div>
           <button id="btn-map-compass" type="button" class="absolute bottom-3 right-3 px-3 py-2 rounded-2xl bg-[#142e21]/90 hover:bg-[#1b4332] active:scale-95 border-2 border-amber-300/80 text-amber-200 text-xs font-black shadow-lg flex items-center gap-1.5">
@@ -161,11 +161,11 @@
       </div>
 
       <!-- Interactive Mini-Game Panel (4 Scout Mini-Games) -->
-      <div id="minigame-panel" class="hidden flex-col gap-2.5 my-auto w-full">
-        <div class="w-full max-w-[388px] mx-auto bg-[#142e21] text-white rounded-2xl border-2 border-amber-400/70 px-3.5 py-2.5 shadow-md flex items-center justify-between gap-2">
+      <div id="minigame-panel" class="hidden flex-col gap-2 w-full flex-1 min-h-0">
+        <div class="w-full max-w-[460px] mx-auto shrink-0 bg-[#142e21] text-white rounded-2xl border-2 border-amber-400/70 px-3.5 py-2.5 shadow-md flex items-center justify-between gap-2">
           <div class="min-w-0">
             <div id="mg-title" class="font-black text-sm text-amber-300 truncate">🔥 星火路標遠征</div>
-            <div id="mg-sub" class="text-[11px] font-bold text-emerald-200 truncate">自由走位點亮 3 座路標！</div>
+            <div id="mg-sub" class="text-[11px] font-bold text-emerald-200 leading-snug">自由走位點亮 3 座路標！</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <span id="mg-progress" class="px-2.5 py-1 rounded-full bg-amber-400 text-emerald-950 text-xs font-black">0 / 3</span>
@@ -173,12 +173,12 @@
           </div>
         </div>
 
-        <div id="mg-canvas-wrap" class="relative w-full max-w-[388px] mx-auto aspect-[5/6] max-h-[450px] rounded-3xl overflow-hidden bg-[#10251b] border-4 border-amber-300 shadow-2xl">
+        <div id="mg-canvas-wrap" class="relative w-full max-w-[460px] mx-auto flex-1 min-h-[240px] rounded-3xl overflow-hidden bg-[#10251b] border-4 border-amber-300 shadow-2xl">
           <canvas id="mg-canvas" style="touch-action: none;" class="w-full h-full block"></canvas>
           <div id="mg-toast" style="background: #142e21;" class="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 max-w-[92%] px-3.5 py-1.5 rounded-full border-2 border-amber-300 text-amber-200 text-xs font-black shadow-xl opacity-0 transition-opacity duration-300 text-center"></div>
         </div>
 
-        <div id="mg-controls" class="w-full max-w-[388px] mx-auto grid grid-cols-3 gap-2">
+        <div id="mg-controls" class="w-full max-w-[460px] mx-auto shrink-0 grid grid-cols-3 gap-2">
           <button id="mg-skill-1" type="button" class="py-2.5 px-2 rounded-xl bg-[#1b4332] hover:bg-[#245943] active:scale-95 border-2 border-amber-300/70 text-amber-200 font-black text-xs shadow">
             🧭 定向
           </button>
@@ -190,7 +190,25 @@
           </button>
         </div>
 
-        <div id="mg-kim-wrap" class="hidden w-full max-w-[388px] mx-auto bg-white/95 rounded-2xl border-2 border-amber-400 p-4 shadow-xl space-y-3">
+        <div id="mg-knot-wrap" class="hidden w-full max-w-[460px] mx-auto flex-1 min-h-0 bg-[#fef3c7] rounded-2xl border-4 border-amber-300 p-3 shadow-xl space-y-2 overflow-y-auto">
+          <div class="flex items-center gap-3">
+            <div class="w-16 h-16 shrink-0 rounded-2xl bg-white border-2 border-amber-300 flex flex-col items-center justify-center">
+              <span class="text-3xl leading-none">🪢</span>
+              <span id="knot-count" class="text-[11px] font-black text-amber-800 mt-0.5">0 / 5</span>
+            </div>
+            <div class="min-w-0">
+              <div id="knot-name" class="font-black text-base text-emerald-950"></div>
+              <div id="knot-use" class="text-xs font-bold text-amber-900 mt-0.5"></div>
+              <div id="knot-mnemonic" class="text-xs font-black text-emerald-800 mt-0.5"></div>
+            </div>
+          </div>
+          <ol id="knot-done" class="space-y-1 p-2.5 rounded-xl bg-white/70 border border-amber-200"></ol>
+          <div class="text-xs font-black text-rose-800">👉 下一步是哪一個？</div>
+          <div id="knot-choices" class="space-y-2"></div>
+          <div id="knot-feedback" class="text-xs font-black text-center min-h-[18px]"></div>
+        </div>
+
+        <div id="mg-kim-wrap" class="hidden w-full max-w-[460px] mx-auto bg-white/95 rounded-2xl border-2 border-amber-400 p-4 shadow-xl space-y-3 overflow-y-auto">
           <div class="flex items-center justify-between gap-2">
             <span id="kim-prompt" class="text-sm font-black text-emerald-950">🔥 仔細記住營火旁的童軍裝備！</span>
             <span id="kim-timer" class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-black">4 秒</span>
@@ -252,7 +270,7 @@
           <div class="flex items-center gap-1.5 shrink-0">
             <button id="btn-open-story-from-bag" type="button" class="px-2 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/45 border border-emerald-300/60 text-emerald-100 text-xs font-black">📖 故事</button>
             <button id="btn-open-cert-from-bag" type="button" class="px-2 py-1.5 rounded-lg bg-amber-500/30 hover:bg-amber-500/45 border border-amber-300/60 text-amber-200 text-xs font-black">🎓 證書</button>
-            <button id="btn-close-bag" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 text-xs sm:text-sm font-bold">關閉 ✕</button>
+            <button id="btn-close-bag" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 text-xs sm:text-sm font-bold">關閉 ×</button>
           </div>
         </div>
         <div class="grid grid-cols-3 gap-1.5 pt-2.5 pb-1 shrink-0">
@@ -276,7 +294,7 @@
       <div id="story-modal" class="absolute inset-0 bg-[#fdfbf5] z-30 hidden flex-col text-gray-900">
         <div class="bg-[#1b4332] text-white px-4 py-3 flex items-center justify-between shrink-0 border-b-2 border-amber-400">
           <div class="font-black text-base text-amber-300">📖 《叢林奇談》完整故事書</div>
-          <button id="btn-close-story" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-bold">關閉 ✕</button>
+          <button id="btn-close-story" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-bold">關閉 ×</button>
         </div>
         <div id="story-content" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
       </div>
@@ -285,7 +303,7 @@
       <div id="arcade-modal" style="background: #0f2017;" class="absolute inset-0 z-30 hidden flex-col p-4 text-white">
         <div class="flex items-center justify-between pb-3 border-b border-white/15">
           <div class="font-black text-base text-amber-300">🎮 幼童軍互動小遊戲練習場</div>
-          <button id="btn-close-arcade" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-bold">關閉 ✕</button>
+          <button id="btn-close-arcade" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-bold">關閉 ×</button>
         </div>
         <p class="text-xs text-emerald-200/90 mt-2.5 mb-2">隨時挑選任一種互動小遊戲試玩（不影響主線 12 篇進度）：</p>
         <div class="flex-1 overflow-y-auto space-y-2.5 py-1">
@@ -299,8 +317,8 @@
           <button data-arcade="knot" type="button" class="w-full text-left p-3.5 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-[0.99] border border-sky-300/40 flex items-center gap-3">
             <span class="text-3xl shrink-0">🪢</span>
             <div class="min-w-0">
-              <div class="font-black text-sm text-sky-300">2. 結繩高手試煉（互動拉線連點）</div>
-              <div class="text-xs text-emerald-100/90 mt-0.5">動手依序連接繩節點，完成平結、蝴蝶結、接繩結與稱人結！</div>
+              <div class="font-black text-sm text-sky-300">2. 結繩高手試煉（排出正確打結步驟）</div>
+              <div class="text-xs text-emerald-100/90 mt-0.5">把平結、接繩結、稱人結、雙套結的打法步驟依正確順序排好！</div>
             </div>
           </button>
           <button data-arcade="compass" type="button" class="w-full text-left p-3.5 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-[0.99] border border-emerald-300/40 flex items-center gap-3">
@@ -398,7 +416,7 @@
             <span class="text-xl">🐺</span>
             <span class="font-black text-sm text-amber-300">阿克拉的新手探險教學</span>
           </div>
-          <button id="btn-tut-skip" type="button" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-emerald-100">跳過教學 ✕</button>
+          <button id="btn-tut-skip" type="button" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-emerald-100">跳過教學 ×</button>
         </div>
 
         <div id="tut-body" class="flex-1 flex flex-col justify-center py-3 space-y-3"></div>
@@ -416,7 +434,7 @@
       <div id="badge-trial-modal" style="background: #0d2217;" class="absolute inset-0 z-50 hidden flex-col justify-between p-4 text-white overflow-y-auto">
         <div class="flex items-center justify-between pb-2.5 border-b border-white/15 shrink-0">
           <div id="bt-header" class="font-black text-sm text-amber-300 truncate">🏅 技能章升級考驗</div>
-          <button id="btn-bt-close" type="button" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-bold text-emerald-100">返回技能樹 ✕</button>
+          <button id="btn-bt-close" type="button" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-bold text-emerald-100">返回技能樹 ×</button>
         </div>
         <div id="bt-body" class="flex-1 flex flex-col justify-center py-3 space-y-3"></div>
       </div>
@@ -425,7 +443,7 @@
       <div id="cert-modal" style="background: #0f2017;" class="absolute inset-0 z-50 hidden flex-col p-4 text-white">
         <div class="flex items-center justify-between pb-2.5 border-b border-white/15">
           <div class="font-black text-base text-amber-300">🎓 專屬幼童軍榮譽證書</div>
-          <button id="btn-close-cert" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-bold">關閉 ✕</button>
+          <button id="btn-close-cert" type="button" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-bold">關閉 ×</button>
         </div>
         <div class="flex-1 flex flex-col items-center justify-center gap-3 py-3 overflow-y-auto">
           <canvas id="cert-canvas" width="720" height="500" class="w-full max-w-[380px] h-auto rounded-2xl border-4 border-amber-300 shadow-2xl bg-[#fdfbf5]"></canvas>
@@ -1102,7 +1120,7 @@
     // 進程等級門檻與順序規則：
     // 1~4 級：剛入團（最基本）｜4 級以上：羚羊級｜10 級以上：狼級｜20 級以上：鹿級｜30 級以上：豹級
     const RANK_DEFS = [
-      { rank: '剛入團', minLv: 1,  prev: null,    badge: '🐾', desc: 'Lv.1～4 最基本階段' },
+      { rank: '剛入團', minLv: 1,  prev: null,    badge: '🐾', desc: 'Lv.1 起・最基本階段' },
       { rank: '羚羊級', minLv: 4,  prev: '剛入團', badge: '🦌', desc: 'Lv.4 以上開放' },
       { rank: '狼級',   minLv: 10, prev: '羚羊級', badge: '🐺', desc: 'Lv.10 以上開放' },
       { rank: '鹿級',   minLv: 20, prev: '狼級',   badge: '🫎', desc: 'Lv.20 以上開放' },
@@ -1668,7 +1686,12 @@
         revealed: [{ x: start.x, y: start.y, r: 175 }],
         mazeN: N,
         mazeC: C,
-        mazeSeen: new Set([start.k])
+        mazeSeen: new Set([start.k]),
+        mazeAdj: (() => {
+          const adj = {};
+          open.forEach(ek => { const [k1, k2] = ek.split('|'); (adj[k1] = adj[k1] || []).push(k2); (adj[k2] = adj[k2] || []).push(k1); });
+          return adj;
+        })()
       };
     }
 
@@ -1685,6 +1708,25 @@
       if (angle >= -157.5 && angle < -112.5) return '西北方 ↖️';
       if (angle >= -112.5 && angle < -67.5) return '北方 ⬆️';
       return '東北方 ↗️';
+    }
+
+    // 沿著迷宮走道算出到目標的路線（給羅盤導引線用）
+    function mazeRoute(fd, target) {
+      if (!fd.mazeAdj) return [target];
+      const C = fd.mazeC;
+      const cellOf = (x, y) => `${Math.floor(x / C)},${Math.floor(y / C)}`;
+      const from = cellOf(fd.player.x, fd.player.y), to = cellOf(target.x, target.y);
+      const prev = { [from]: null };
+      const q = [from];
+      for (let h = 0; h < q.length && !(to in prev); h++) {
+        for (const nb of fd.mazeAdj[q[h]] || []) if (!(nb in prev)) { prev[nb] = q[h]; q.push(nb); }
+      }
+      if (!(to in prev)) return [target];
+      const cells = [];
+      for (let k = to; k && k !== from; k = prev[k]) cells.unshift(k);
+      const pts = cells.slice(0, -1).map(k => { const [c, r] = k.split(',').map(Number); return { x: (c + 0.5) * C, y: (r + 0.5) * C }; });
+      pts.push(target);
+      return pts;
     }
 
     function getForestTarget(fd) {
@@ -1876,14 +1918,18 @@
       fCtx.save();
       fCtx.scale(dpr, dpr);
 
-      const camX = Math.max(0, Math.min(FOREST_WORLD - w, fd.player.x - w / 2));
-      const camY = Math.max(0, Math.min(FOREST_WORLD - h, fd.player.y - h / 2));
+      // 鏡頭縮放：螢幕越小拉得越遠，手機上也能看到附近的岔路與路標
+      const Z = Math.max(0.62, Math.min(0.9, Math.min(w, h) / 470));
+      const vw = w / Z, vh = h / Z;
+      const camX = Math.max(0, Math.min(FOREST_WORLD - vw, fd.player.x - vw / 2));
+      const camY = Math.max(0, Math.min(FOREST_WORLD - vh, fd.player.y - vh / 2));
 
       // 1. 森林草地背景與斜向微格紋（星火遠征風格）
       fCtx.fillStyle = '#24523b';
       fCtx.fillRect(0, 0, w, h);
 
       fCtx.save();
+      fCtx.scale(Z, Z);
       fCtx.translate(-camX, -camY);
 
       fCtx.strokeStyle = 'rgba(255,255,255,0.045)';
@@ -1928,14 +1974,15 @@
         fCtx.strokeStyle = '#92400e';
         fCtx.lineWidth = 2;
         fCtx.beginPath();
-        fCtx.roundRect(fb.x - 68, fb.y - 16, 136, 20, 6);
+        const bx = Math.max(72, Math.min(FOREST_WORLD - 72, fb.x));
+        fCtx.roundRect(bx - 68, fb.y - 16, 136, 20, 6);
         fCtx.fill();
         fCtx.stroke();
         fCtx.fillStyle = '#78350f';
         fCtx.font = 'bold 10px "Noto Sans TC", sans-serif';
         fCtx.textAlign = 'center';
         fCtx.textBaseline = 'middle';
-        fCtx.fillText(fb.text, fb.x, fb.y - 6);
+        fCtx.fillText(fb.text, bx, fb.y - 6);
       }
 
       // 5. 星火路標（發光菱形＋火光）
@@ -1984,7 +2031,7 @@
 
       // 7. 森林樹木與岩石
       for (const ob of fd.obstacles) {
-        if (ob.x < camX - 50 || ob.x > camX + w + 50 || ob.y < camY - 50 || ob.y > camY + h + 50) continue;
+        if (ob.x < camX - 50 || ob.x > camX + vw + 50 || ob.y < camY - 50 || ob.y > camY + vh + 50) continue;
         fCtx.save();
         fCtx.translate(ob.x, ob.y);
         fCtx.fillStyle = 'rgba(0,0,0,0.25)';
@@ -2057,8 +2104,9 @@
         fCtx.setLineDash([8, 8]);
         fCtx.lineDashOffset = -ts / 25;
         fCtx.beginPath();
+        const route = mazeRoute(fd, target);
         fCtx.moveTo(fd.player.x, fd.player.y);
-        fCtx.lineTo(target.x, target.y);
+        route.forEach(pt => fCtx.lineTo(pt.x, pt.y));
         fCtx.stroke();
         fCtx.restore();
       }
@@ -2066,8 +2114,8 @@
       fCtx.restore();
 
       // 11. 溫和迷霧遮罩（圍繞小狼微暗邊緣，讓探索有叢林氛圍但保持明亮好辨識）
-      const px = fd.player.x - camX;
-      const py = fd.player.y - camY;
+      const px = (fd.player.x - camX) * Z;
+      const py = (fd.player.y - camY) * Z;
       const grad = fCtx.createRadialGradient(px, py, 95, px, py, Math.max(w, h) * 0.78);
       grad.addColorStop(0, 'rgba(12, 32, 22, 0)');
       grad.addColorStop(1, 'rgba(12, 32, 22, 0.58)');
@@ -2194,7 +2242,7 @@
     }
 
     // =========================================================================
-    // 5B. 4 種幼童軍互動小遊戲引擎（星火路標 / 結繩拉線 / 八方位羅盤 / 金氏記憶）
+    // 5B. 4 種幼童軍互動小遊戲引擎（星火路標 / 結繩步驟 / 八方位羅盤 / 金氏記憶）
     // =========================================================================
     const mgCanvas = document.getElementById('mg-canvas');
     const mgCtx = mgCanvas.getContext('2d');
@@ -2218,6 +2266,9 @@
     function showMgToast(msg) {
       const el = document.getElementById('mg-toast');
       if (!el) return;
+      // 羅盤遊戲的「南」按鈕在下方，提示改放上方，避免擋住
+      el.classList.toggle('top-[78px]', mgKind === 'compass');
+      el.classList.toggle('bottom-2.5', mgKind !== 'compass');
       el.textContent = msg;
       el.classList.remove('opacity-0');
       el.classList.add('opacity-100');
@@ -2290,7 +2341,15 @@
       const controlsBar = document.getElementById('mg-controls');
       const kimWrap = document.getElementById('mg-kim-wrap');
 
-      if (kind === 'kim') {
+      const knotWrap = document.getElementById('mg-knot-wrap');
+      knotWrap.classList.toggle('hidden', kind !== 'knot');
+      if (kind === 'knot') {
+        canvasWrap.classList.add('hidden');
+        controlsBar.classList.add('hidden');
+        controlsBar.classList.remove('grid');
+        kimWrap.classList.add('hidden');
+        initKnotGame(opts.knotSet || 'wolf');
+      } else if (kind === 'kim') {
         canvasWrap.classList.add('hidden');
         controlsBar.classList.add('hidden');
         kimWrap.classList.remove('hidden');
@@ -2316,8 +2375,8 @@
       { id: 'dmg', icon: '🔥', name: '星火強擊', desc: '自動星火攻擊傷害 +6', apply: (s) => { s.dmgBonus += 6; } },
       { id: 'spd', icon: '👟', name: '疾行步伐', desc: '小狼移動速度提升 14%', apply: (s) => { s.speedMult *= 1.14; } },
       { id: 'rate', icon: '⚡', name: '快速整備', desc: '星火攻擊速度提升 18%', apply: (s) => { s.atkInterval = Math.max(0.28, s.atkInterval * 0.82); } },
-      { id: 'hp', icon: '❤️', name: '堅韌意志', desc: '最大體力與目前體力 +20', apply: (s) => { s.player.maxHp += 20; s.player.hp += 20; state.maxHp += 20; state.hp = s.player.hp; updateHud(); } },
-      { id: 'heal', icon: '🍯', name: '補給整備', desc: '立即恢復 35 點體力', apply: (s) => { s.player.hp = Math.min(s.player.maxHp, s.player.hp + 35); state.hp = s.player.hp; updateHud(); } },
+      { id: 'hp', icon: '❤️', name: '堅韌意志', desc: '最大體力與目前體力 +20', apply: (s) => { s.player.maxHp += 20; s.player.hp += 20; if (s.liveHp) { state.maxHp += 20; state.hp = s.player.hp; updateHud(); } } },
+      { id: 'heal', icon: '🍯', name: '補給整備', desc: '立即恢復 35 點體力', apply: (s) => { s.player.hp = Math.min(s.player.maxHp, s.player.hp + 35); if (s.liveHp) { state.hp = s.player.hp; updateHud(); } } },
       { id: 'cd', icon: '🧭', name: '生存技巧', desc: '定向／繩結／急救冷卻縮短 18%', apply: (s) => { s.cdMult *= 0.82; } }
     ];
 
@@ -2366,7 +2425,9 @@
       mgState = {
         W,
         paused: false,
-        player: { x: 160, y: W - 160, r: 18, hp: Math.min(state.hp, effB.maxHp), maxHp: effB.maxHp, invuln: 0 },
+        // 練習場與技能章試煉用獨立的體力，不會扣到主線 HP；只有主線篇章的星火遠征才會同步
+        liveHp: !mgPracticeMode,
+        player: { x: 160, y: W - 160, r: 18, hp: mgPracticeMode ? effB.maxHp : Math.min(state.hp, effB.maxHp), maxHp: effB.maxHp, invuln: 0 },
         beacons,
         obstacles,
         enemies,
@@ -2491,7 +2552,7 @@
         mgState.cd[2] = 11 * mgState.cdMult;
         const healAmt = (state.squad === '藍小隊' ? 40 : 30) + (state.talent === 'service' ? 12 : 0) + (mgState.healBonus || 0);
         mgState.player.hp = Math.min(mgState.player.maxHp, mgState.player.hp + healAmt);
-        state.hp = mgState.player.hp;
+        if (mgState.liveHp) state.hp = mgState.player.hp;
         updateHud();
         Sfx.coin();
         mgState.floats.push({ x: mgState.player.x, y: mgState.player.y - 18, txt: `+${healAmt} HP`, color: '#4ade80', life: 1.0 });
@@ -2629,7 +2690,7 @@
         if (Math.hypot(s.player.x - en.x, s.player.y - en.y) < s.player.r + en.r && s.player.invuln <= 0) {
           s.player.invuln = s.invulnDur || 1.0;
           s.player.hp = Math.max(10, s.player.hp - 10);
-          state.hp = s.player.hp;
+          if (s.liveHp) state.hp = s.player.hp;
           updateHud();
           Sfx.hit();
           s.floats.push({ x: s.player.x, y: s.player.y - 16, txt: '-10', color: '#fb7185', life: 0.7 });
@@ -2671,7 +2732,7 @@
           if (Math.hypot(sh.x - s.player.x, sh.y - s.player.y) < s.player.r + 9 && s.player.invuln <= 0) {
             s.player.invuln = 1.0;
             s.player.hp = Math.max(10, s.player.hp - 12);
-            state.hp = s.player.hp;
+            if (s.liveHp) state.hp = s.player.hp;
             updateHud();
             Sfx.hit();
             s.floats.push({ x: s.player.x, y: s.player.y - 16, txt: '-12', color: '#fb7185', life: 0.7 });
@@ -2698,7 +2759,7 @@
             b.lit = true;
             lit++;
             s.player.hp = Math.min(s.player.maxHp, s.player.hp + 15);
-            state.hp = s.player.hp;
+            if (s.liveHp) state.hp = s.player.hp;
             updateHud();
             Sfx.win();
             showMgToast(`✨ 成功修復【${b.name}】！(${lit}/${s.beacons.length})`);
@@ -2922,39 +2983,40 @@
     document.getElementById('mg-skill-3').addEventListener('click', () => triggerBeaconSkill(2));
 
     // --- 小遊戲 2：結繩高手試煉（依序點擊 / 拖曳連結繩節點）---
+    // 結繩遊戲：每一步都是真正的打結步驟，要依正確順序點選，才算學會這個繩結
     const KNOT_BANK = {
       wolf: [
         {
-          name: '平結（綁小包裹）',
-          tip: '平結口訣「左壓右、右壓左」，用來綁小包裹最牢靠！',
-          pts: [[0.2, 0.52], [0.38, 0.34], [0.62, 0.66], [0.8, 0.48], [0.5, 0.25]]
+          name: '平結', use: '用途：綁小包裹、包紮三角巾', mnemonic: '口訣：右壓左、左壓右',
+          tip: '平結打好時，兩邊繩頭會在同一側，結形平整對稱！',
+          steps: ['兩條繩頭交叉，右繩壓在左繩上面', '右繩從下方繞過左繩，打出第一個結', '兩條繩頭再交叉，這次左繩壓在右繩上面', '左繩從下方繞過，打出第二個結', '兩端同時拉緊，檢查繩頭在同一側']
         },
         {
-          name: '蝴蝶結（綁鞋帶）',
-          tip: '蝴蝶結一拉就開，是狼級進程必學的生活好幫手！',
-          pts: [[0.22, 0.62], [0.35, 0.35], [0.5, 0.52], [0.65, 0.35], [0.78, 0.62]]
+          name: '蝴蝶結', use: '用途：綁鞋帶、綁禮物', mnemonic: '口訣：先打單結，再做兩個兔耳朵',
+          tip: '蝴蝶結拉一下繩頭就能解開，是生活中最常用的結！',
+          steps: ['兩條鞋帶交叉，打一個單結並拉緊', '一條鞋帶折成一個圈（第一個兔耳朵）', '另一條鞋帶繞過這個圈一圈', '把繞過來的鞋帶從中間的洞推出，做出第二個圈', '抓住兩個圈往兩邊拉緊']
         },
         {
-          name: '雙半結（固定繩索）',
-          tip: '連續兩個半結套在木樁上，簡單又不容易鬆脫！',
-          pts: [[0.22, 0.7], [0.35, 0.42], [0.55, 0.32], [0.65, 0.56], [0.82, 0.4]]
+          name: '雙半結', use: '用途：把繩子固定在木樁或欄杆上', mnemonic: '口訣：繞樁一圈，同方向繞兩次',
+          tip: '兩個半結要繞同一個方向，推緊後就不容易鬆脫！',
+          steps: ['繩子繞過木樁一圈', '繩頭繞過主繩，從圈裡穿出來（第一個半結）', '繩頭往同一個方向再繞主繩一次，穿出來（第二個半結）', '把兩個半結推緊，靠在木樁上']
         }
       ],
       leopard: [
         {
-          name: '接繩結（接不同粗細繩）',
-          tip: '接繩結專門用來連接兩條粗細不同的繩子！',
-          pts: [[0.18, 0.5], [0.36, 0.3], [0.52, 0.55], [0.68, 0.3], [0.82, 0.55], [0.5, 0.72]]
+          name: '接繩結', use: '用途：連接兩條粗細不同的繩子', mnemonic: '口訣：粗繩做耳，細繩繞過再塞下',
+          tip: '接繩結要用粗繩做繩耳，拉緊後兩條繩頭在同一側！',
+          steps: ['把比較粗的繩子折成一個繩耳（U 形）', '細繩從繩耳下方往上穿過', '細繩繞到繩耳的後方一圈', '細繩從自己下方塞過去（不要穿進繩耳）', '拉緊兩條主繩，檢查繩頭在同一側']
         },
         {
-          name: '稱人結（救援活套）',
-          tip: '稱人結是「繩結之王」，套住物體不會越拉越緊！',
-          pts: [[0.5, 0.22], [0.3, 0.42], [0.46, 0.58], [0.7, 0.45], [0.56, 0.74], [0.28, 0.72]]
+          name: '稱人結', use: '用途：救援時做一個不會縮緊的繩圈', mnemonic: '口訣：小兔出洞、繞過大樹、回到洞裡',
+          tip: '稱人結是「繩結之王」，做出的繩圈不會越拉越緊！',
+          steps: ['在主繩上做一個小圈（兔子洞）', '繩頭從小圈下方穿出來（小兔出洞）', '繩頭繞到主繩後面一圈（繞過大樹）', '繩頭再從小圈穿回去（回到洞裡）', '抓住繩頭和繩圈，拉緊主繩']
         },
         {
-          name: '平結（團隊合力）',
-          tip: '熟練平結、接繩結與稱人結，就是最棒的豹級結繩高手！',
-          pts: [[0.2, 0.52], [0.38, 0.34], [0.62, 0.66], [0.8, 0.48], [0.5, 0.25]]
+          name: '雙套結', use: '用途：把繩子快速綁在旗桿或樹幹上', mnemonic: '口訣：繞一圈交叉，再繞一圈塞進去',
+          tip: '雙套結打得快又能調整，搭營帳、綁旗桿都用得到！',
+          steps: ['繩子繞過旗桿一圈', '繩頭斜跨過主繩，在旗桿上再繞第二圈', '繩頭從第二圈底下塞進去', '兩端拉緊，形成兩個並排的繩圈']
         }
       ]
     };
@@ -2963,133 +3025,77 @@
       const isTrialKn = !!(activeBadgeTrial && activeBadgeTrial.stage === 'mg');
       const fullList = KNOT_BANK[setName] || KNOT_BANK.wolf;
       const list = isTrialKn ? fullList.slice(0, 2) : fullList;
-      mgState = { list, idx: 0, step: 0, sparks: [] };
+      mgState = { list, idx: 0, step: 0, mistakes: 0, hint: false };
       document.getElementById('mg-title').textContent = isTrialKn ? `${activeBadgeTrial.badge.icon} ${activeBadgeTrial.badge.name}・結繩闖關` : '🪢 結繩高手試煉';
-      document.getElementById('mg-sub').textContent = `依序點擊 1 → 2 → 3 完成【${list[0].name}】`;
       document.getElementById('mg-progress').textContent = `繩結 0 / ${list.length}`;
-
-      const loop = (ts) => {
-        if (mode !== 'minigame' || mgKind !== 'knot') return;
-        drawKnotGame(ts);
-        mgRaf = requestAnimationFrame(loop);
-      };
-      mgRaf = requestAnimationFrame(loop);
+      renderKnot();
     }
 
-    function handleKnotPointer(clientX, clientY) {
-      if (mode !== 'minigame' || mgKind !== 'knot' || !mgState) return;
-      const r = mgCanvas.getBoundingClientRect();
-      const x = clientX - r.left, y = clientY - r.top;
-      const knot = mgState.list[mgState.idx];
-      if (!knot || mgState.step >= knot.pts.length) return;
-      const [px, py] = knot.pts[mgState.step];
-      const tx = px * r.width, ty = py * r.height;
-      if (Math.hypot(x - tx, y - ty) < 34 + getBadgeBuffs().knotForgive) {
-        mgState.step++;
-        Sfx.coin();
-        for (let i = 0; i < 8; i++) {
-          const a = (i / 8) * Math.PI * 2;
-          mgState.sparks.push({ x: tx, y: ty, vx: Math.cos(a) * 65, vy: Math.sin(a) * 65, life: 0.45 });
-        }
-        if (mgState.step >= knot.pts.length) {
-          Sfx.win();
-          showMgToast(`✅ 完成【${knot.name}】！${knot.tip}`);
-          mgState.idx++;
-          document.getElementById('mg-progress').textContent = `繩結 ${mgState.idx} / ${mgState.list.length}`;
-          if (mgState.idx >= mgState.list.length) {
-            const tid = setTimeout(() => finishMiniGame('你順利完成所有幼童軍繩結拉線考驗，手腳超俐落！'), 900);
-            mgTimers.push(tid);
-          } else {
-            const tid = setTimeout(() => {
-              if (!mgState || mgKind !== 'knot') return;
-              mgState.step = 0;
-              document.getElementById('mg-sub').textContent = `依序點擊 1 → 2 → 3 完成【${mgState.list[mgState.idx].name}】`;
-            }, 850);
-            mgTimers.push(tid);
-          }
-        }
-      }
-    }
-
-    function drawKnotGame(ts) {
+    function renderKnot(feedback = '', good = true) {
       const s = mgState;
-      const { w, h, dpr } = resizeCanvasToDisplay(mgCanvas);
-      mgCtx.save();
-      mgCtx.scale(dpr, dpr);
-
-      // 木紋營地工作桌背景
-      mgCtx.fillStyle = '#1b4332';
-      mgCtx.fillRect(0, 0, w, h);
-      mgCtx.fillStyle = '#fef3c7';
-      mgCtx.beginPath(); mgCtx.roundRect(14, 14, w - 28, h - 28, 22); mgCtx.fill();
-
-      const knot = s.list[Math.min(s.idx, s.list.length - 1)];
-      mgCtx.fillStyle = '#14532d';
-      mgCtx.font = '900 17px "Noto Sans TC", sans-serif';
-      mgCtx.textAlign = 'center';
-      mgCtx.fillText(`🪢 ${knot.name}`, w / 2, 46);
-
-      // 導引虛線
-      mgCtx.strokeStyle = 'rgba(180, 83, 9, 0.28)';
-      mgCtx.lineWidth = 6;
-      mgCtx.setLineDash([8, 8]);
-      mgCtx.beginPath();
-      knot.pts.forEach(([px, py], i) => {
-        if (i === 0) mgCtx.moveTo(px * w, py * h);
-        else mgCtx.lineTo(px * w, py * h);
-      });
-      mgCtx.stroke();
-      mgCtx.setLineDash([]);
-
-      // 已拉緊的麻繩
-      if (s.step >= 2) {
-        mgCtx.strokeStyle = '#b45309';
-        mgCtx.lineWidth = 11;
-        mgCtx.lineCap = 'round';
-        mgCtx.lineJoin = 'round';
-        mgCtx.beginPath();
-        for (let i = 0; i < s.step; i++) {
-          const [px, py] = knot.pts[i];
-          if (i === 0) mgCtx.moveTo(px * w, py * h);
-          else mgCtx.lineTo(px * w, py * h);
-        }
-        mgCtx.stroke();
-        mgCtx.strokeStyle = '#fbbf24';
-        mgCtx.lineWidth = 5;
-        mgCtx.stroke();
-      }
-
-      // 節點圓球
-      const pulse = 0.5 + 0.5 * Math.sin(ts / 180);
-      knot.pts.forEach(([px, py], i) => {
-        const cx = px * w, cy = py * h;
-        const done = i < s.step;
-        const isNext = i === s.step;
-        if (isNext) {
-          mgCtx.fillStyle = `rgba(245, 158, 11, ${0.25 + pulse * 0.3})`;
-          mgCtx.beginPath(); mgCtx.arc(cx, cy, 26 + pulse * 6, 0, Math.PI * 2); mgCtx.fill();
-        }
-        mgCtx.fillStyle = done ? '#16a34a' : isNext ? '#f59e0b' : '#ffffff';
-        mgCtx.strokeStyle = done ? '#14532d' : '#b45309';
-        mgCtx.lineWidth = 3;
-        mgCtx.beginPath(); mgCtx.arc(cx, cy, 20, 0, Math.PI * 2); mgCtx.fill(); mgCtx.stroke();
-        mgCtx.fillStyle = done || isNext ? '#ffffff' : '#78350f';
-        mgCtx.font = '900 16px Inter, sans-serif';
-        mgCtx.textAlign = 'center'; mgCtx.textBaseline = 'middle';
-        mgCtx.fillText(done ? '✓' : String(i + 1), cx, cy + 1);
-      });
-
-      // 火花
-      for (let i = s.sparks.length - 1; i >= 0; i--) {
-        const sp = s.sparks[i];
-        sp.x += sp.vx * 0.016; sp.y += sp.vy * 0.016; sp.life -= 0.016;
-        if (sp.life <= 0) { s.sparks.splice(i, 1); continue; }
-        mgCtx.fillStyle = '#f59e0b';
-        mgCtx.beginPath(); mgCtx.arc(sp.x, sp.y, 4, 0, Math.PI * 2); mgCtx.fill();
-      }
-
-      mgCtx.restore();
+      if (!s || mgKind !== 'knot') return;
+      const k = s.list[s.idx];
+      document.getElementById('mg-sub').textContent = `把【${k.name}】的打法步驟，依正確順序點出來！`;
+      document.getElementById('knot-name').textContent = `🪢 ${k.name}`;
+      document.getElementById('knot-use').textContent = k.use;
+      document.getElementById('knot-mnemonic').textContent = k.mnemonic;
+      document.getElementById('knot-count').textContent = `${s.step} / ${k.steps.length}`;
+      document.getElementById('knot-done').innerHTML = k.steps.map((t, i) => i < s.step
+        ? `<li class="flex gap-2 text-xs font-bold text-emerald-900"><span class="shrink-0 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]">${i + 1}</span><span>${t}</span></li>`
+        : `<li class="flex gap-2 text-xs font-bold text-amber-900/50"><span class="shrink-0 w-5 h-5 rounded-full border-2 border-amber-300 flex items-center justify-center text-[11px]">${i + 1}</span><span>？</span></li>`).join('');
+      const remaining = k.steps.map((t, i) => i).filter(i => i >= s.step);
+      for (let i = remaining.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [remaining[i], remaining[j]] = [remaining[j], remaining[i]]; }
+      document.getElementById('knot-choices').innerHTML = remaining.map(i => `
+        <button data-kstep="${i}" type="button" class="w-full text-left px-3 py-2 rounded-xl border-2 ${s.hint && i === s.step ? 'border-emerald-500 bg-emerald-100 animate-pulse' : 'border-amber-300 bg-white hover:bg-amber-100'} active:scale-[0.99] text-sm font-bold text-gray-900">${k.steps[i]}</button>`).join('');
+      const fb = document.getElementById('knot-feedback');
+      fb.className = `text-xs font-black text-center min-h-[18px] ${good ? 'text-emerald-700' : 'text-rose-700'}`;
+      fb.textContent = feedback;
     }
+
+    function handleKnotChoice(i) {
+      const s = mgState;
+      if (mode !== 'minigame' || mgKind !== 'knot' || !s || s.busy) return;
+      const k = s.list[s.idx];
+      if (i === s.step) {
+        s.step++;
+        s.hint = false;
+        Sfx.coin();
+        if (s.step >= k.steps.length) {
+          Sfx.win();
+          s.busy = true;
+          s.idx++;
+          document.getElementById('mg-progress').textContent = `繩結 ${s.idx} / ${s.list.length}`;
+          // 這個繩結已完成：直接更新畫面（不能再用 renderKnot，因為 idx 已經指向下一個繩結）
+          document.getElementById('knot-count').textContent = `${k.steps.length} / ${k.steps.length}`;
+          document.getElementById('knot-done').innerHTML = k.steps.map((t, n) => `<li class="flex gap-2 text-xs font-bold text-emerald-900"><span class="shrink-0 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]">${n + 1}</span><span>${t}</span></li>`).join('');
+          document.getElementById('knot-choices').innerHTML = '';
+          const kfb = document.getElementById('knot-feedback');
+          kfb.className = 'text-sm font-black text-center min-h-[18px] text-emerald-700';
+          kfb.textContent = `✅ 完成【${k.name}】！${k.tip}`;
+          const tid = setTimeout(() => {
+            if (!mgState || mgKind !== 'knot') return;
+            if (s.idx >= s.list.length) { finishMiniGame('你把每個繩結的打法步驟都排對了，是真正的結繩高手！'); return; }
+            s.step = 0; s.busy = false;
+            renderKnot();
+          }, 1600);
+          mgTimers.push(tid);
+        } else {
+          renderKnot('👍 對了！繼續下一步');
+        }
+      } else {
+        s.mistakes++;
+        Sfx.hit();
+        // 「結繩判定放寬」技能章：答錯後提示正確的下一步
+        s.hint = getBadgeBuffs().knotForgive > 0 || s.mistakes >= 3;
+        renderKnot(`❌ 這一步還沒到喔！先想想：${k.mnemonic.replace('口訣：', '')}`, false);
+      }
+    }
+    document.getElementById('knot-choices').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-kstep]');
+      if (btn) handleKnotChoice(parseInt(btn.getAttribute('data-kstep'), 10));
+    });
+    // 舊的畫布點擊接口保留為空，避免其他地方呼叫時出錯
+    function handleKnotPointer() {}
 
     // --- 小遊戲 3：八方位羅盤定向（即時信號彈夾攻）---
     const COMPASS_DIRS = [
@@ -3150,7 +3156,7 @@
         document.getElementById('mg-progress').textContent = `${mgState.score} / ${mgState.goal}`;
         showMgToast(`🎯 準確指向【${dObj.label}方】！水牛群成功夾攻！`);
         if (mgState.score >= mgState.goal) {
-          const tid = setTimeout(() => finishMiniGame('你連續判讀 6 次八方位羅盤，完美引導狼群與水牛！'), 750);
+          const tid = setTimeout(() => finishMiniGame(`你連續判讀 ${mgState.goal} 次八方位羅盤，完美引導狼群與水牛！`), 750);
           mgTimers.push(tid);
         } else {
           let next = Math.floor(Math.random() * 8);
@@ -3650,7 +3656,7 @@
             <div class="flex items-center justify-between gap-2">
               <div>
                 <div class="font-black text-sm text-amber-300">📘 幼童軍 5 級進程（目前：${curRank}）</div>
-                <div class="text-[11px] text-emerald-100 mt-0.5">Lv.1-4 剛入團｜Lv.4+ 羚羊｜Lv.10+ 狼｜Lv.20+ 鹿｜Lv.30+ 豹</div>
+                <div class="text-[11px] text-emerald-100 mt-0.5">Lv.1 起 剛入團｜Lv.4+ 羚羊｜Lv.10+ 狼｜Lv.20+ 鹿｜Lv.30+ 豹</div>
               </div>
               <div class="text-right shrink-0">
                 <div class="font-black text-base text-amber-300">${doneTotal}/${PROGRESS_ITEMS.length}</div>
@@ -3658,7 +3664,7 @@
               </div>
             </div>
             ${(state.pendingProgressCount || 0) > 0 ? `<div class="px-2.5 py-1.5 rounded-lg bg-emerald-500/25 border border-emerald-300/50 text-[11px] font-black text-emerald-200">⬆️ 你剛剛升級了！請點下方「⚡ 挑戰核章」完成本級進程（剩餘提醒 ${state.pendingProgressCount} 次）</div>` : ''}
-            ${!nextGate.ok ? `<div class="px-2.5 py-1.5 rounded-lg bg-rose-500/25 border border-rose-300/50 text-[11px] font-black text-rose-200">🔒 第 ${state.stageIdx + 1} 篇故事線鎖定中：需完成【${nextGate.gate.reqRank}】全部進程並達 Lv.${nextGate.gate.minLv}</div>` : `<button id="btn-bag-resume-story" type="button" class="w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-emerald-950 font-black text-xs shadow">🚀 進程已達標！繼續第 ${state.stageIdx + 1} 篇森林冒險</button>`}
+            ${!nextGate.ok ? `<div class="px-2.5 py-1.5 rounded-lg bg-rose-500/25 border border-rose-300/50 text-[11px] font-black text-rose-200">🔒 第 ${state.stageIdx + 1} 篇故事線鎖定中：需完成【${nextGate.gate.reqRank}】全部進程並達 Lv.${nextGate.gate.minLv}</div>` : `<button id="btn-bag-resume-story" type="button" class="w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-emerald-950 font-black text-xs shadow">🚀 ${CHAPTER_GATES[state.stageIdx] ? '進程已達標！' : ''}繼續第 ${state.stageIdx + 1} 篇森林冒險</button>`}
           </div>
         `;
         RANK_DEFS.forEach(rd => {
@@ -3781,10 +3787,10 @@
             const isSel = node.id === sel.id;
             const ring = isSel ? 'ring-2 ring-white scale-105' : '';
             const cardCls = has
-              ? 'bg-amber-400/25 border-amber-300 text-amber-200 shadow-[0_0_14px_rgba(251,191,36,0.35)]'
+              ? 'bg-[#3b3212] border-amber-300 text-amber-200 shadow-[0_0_14px_rgba(251,191,36,0.35)]'
               : can
-                ? 'bg-emerald-500/25 border-emerald-300 text-emerald-100 animate-pulse'
-                : 'bg-black/45 border-white/15 text-white/50';
+                ? 'bg-[#14432c] border-emerald-300 text-emerald-100 animate-pulse'
+                : 'bg-[#0f1f17] border-white/15 text-white/50';
             cells += `
               <button data-tree-node="${node.id}" type="button" class="relative z-10 flex flex-col items-center justify-center p-1.5 rounded-2xl border-2 transition ${cardCls} ${ring}">
                 <span class="text-xl leading-none">${node.icon}</span>
@@ -3903,6 +3909,7 @@
             fb.textContent = bonusSp > 0
               ? `✅ 核章成功！【${item.rank}・${item.title}】達成！⭐ 額外獲得 ${bonusSp} 顆天賦星點！`
               : `✅ 核章成功！【${item.rank}・${item.title}】已達成！`;
+            renderBagTab();
             setTimeout(() => {
               box.classList.add('hidden');
               renderBagTab();
@@ -4287,7 +4294,7 @@
           badge: '步驟 3 / 5・升級與 5 級進程關卡',
           icon: '📘',
           title: '每次升級完成 1 項進程，解鎖完整故事！',
-          desc: '進程依等級分階段開放：Lv.1～4 剛入團（最基本）→ Lv.4+ 羚羊 → Lv.10+ 狼 → Lv.20+ 鹿 → Lv.30+ 豹！',
+          desc: '進程依等級分階段開放：Lv.1 起剛入團（最基本）→ Lv.4+ 羚羊 → Lv.10+ 狼 → Lv.20+ 鹿 → Lv.30+ 豹！',
           tips: [
             '🔒 如果一直沒通過目前進程，雖然還能繼續升級，但級別會停在原地、無法解鎖下一段主線故事！',
             '⚡ 破關或鍛鍊升級後，記得點「🎖️ 榮譽帶 → 📘 進程核章」挑戰過關！'
@@ -4300,7 +4307,7 @@
           desc: '冒險途中與右上角「🎮 小遊戲」練習場，內建 4 款專屬互動玩法：',
           tips: [
             '🔥 星火路標遠征：自由走位＋自動攻擊＋定向/繩結/急救三技能（鍵盤 1/2/3）打敗迷霧守護者！',
-            '🪢 結繩拉線・🧭 八方位羅盤・🔍 金氏記憶：每一款都受你的技能章樹加成！'
+            '🪢 結繩步驟・🧭 八方位羅盤・🔍 金氏記憶：每一款都受你的技能章樹加成！'
           ]
         },
         {
@@ -4384,9 +4391,12 @@
     });
 
     ovStoryBtn.addEventListener('click', openFullStory);
+    let storyFromBag = false;
     document.getElementById('btn-close-story').addEventListener('click', () => {
       storyModal.classList.add('hidden');
       storyModal.classList.remove('flex');
+      // 從小黃本打開的故事書，關閉後回到小黃本
+      if (storyFromBag) { storyFromBag = false; openBagModal(); }
     });
 
 
@@ -4431,6 +4441,7 @@
     document.getElementById('btn-open-story-from-bag').addEventListener('click', () => {
       bagModal.classList.add('hidden');
       bagModal.classList.remove('flex');
+      storyFromBag = true;
       openFullStory();
     });
     document.getElementById('btn-open-cert-from-bag').addEventListener('click', () => {
@@ -4455,9 +4466,24 @@
       Sfx.startBgm();
       openArcadeModal();
     });
+    // 關閉練習場：如果正在冒險中就留在原畫面；否則回到森林（保留進度）或標題畫面
+    function returnFromArcade() {
+      const inScene = ['map', 'battle', 'quiz', 'dialogue'].includes(mode) || !overlay.classList.contains('hidden');
+      if (inScene) return;
+      stopMiniGame();
+      hideAllPanels();
+      if (state.tutorialDone && forestData && forestData.idx === state.stageIdx && !state.cleared[state.stageIdx]) {
+        resumeForestMap();
+        return;
+      }
+      saveProgress();
+      mode = 'title';
+      showTitleScreen();
+    }
     document.getElementById('btn-close-arcade').addEventListener('click', () => {
       arcadeModal.classList.add('hidden');
       arcadeModal.classList.remove('flex');
+      returnFromArcade();
     });
     document.querySelectorAll('[data-arcade]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -4475,6 +4501,9 @@
         if (typeof cb === 'function') cb();
         else { activeBagTab = 'talent'; openBagModal(); }
       } else {
+        // 結束小遊戲本身，再打開練習場選單（關閉選單後會回到冒險或標題）
+        hideAllPanels();
+        mode = 'arcade';
         openArcadeModal();
       }
     });
@@ -4553,7 +4582,7 @@
       }
     });
 
-    window.onload = () => {
+    function showTitleScreen() {
       const saved = loadProgress();
       const hasProgress = saved && (saved.stageIdx > 0 || saved.cleared.some(Boolean) || (saved.level || 1) > 1 ||
         (saved.completedProgress || []).length > 0 || (saved.unlockedBadges || []).length > 0 || saved.tutorialDone);
@@ -4604,7 +4633,8 @@
           });
         });
       }
-    };
+    }
+    window.onload = showTitleScreen;
   </script>
 </body>
 </html>
