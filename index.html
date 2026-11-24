@@ -1733,6 +1733,15 @@
     }
     // 關閉小黃本後要接續的流程（例如技能章奇遇結束後回到森林／進程提醒）
     let afterBagClose = null;
+    // 關掉視窗後如果畫面上什麼都沒有（例如破關後去小黃本核章、直接按關閉），
+    // 就接著出發目前這一篇；進程還沒核完時會顯示「需要先核章」的提示，不會空白
+    function ensureSceneVisible() {
+      const panels = [mapPanel, battlePanel, quizPanel, minigamePanel, sceneCard, rpgDialogue];
+      if (panels.some(el => !el.classList.contains('hidden')) || !overlay.classList.contains('hidden') || uiBlocking() || topModalOpen()) return;
+      if (!state.tutorialDone || state.cleared.every(Boolean)) { mode = 'title'; showTitleScreen(); return; }
+      startChapter(state.stageIdx);
+    }
+
     function resumeIfFrozen() {
       // 森林迴圈被停掉、但畫面還停在地圖 → 接回原本那座森林
       if (mode === 'map' && forestData && !forestRaf && forestData.idx === state.stageIdx && !state.cleared[state.stageIdx]) runForestLoop();
@@ -4963,6 +4972,7 @@
       afterBagClose = null;
       if (typeof next === 'function') next();
       else resumeIfFrozen();
+      ensureSceneVisible();
     });
 
     ovStoryBtn.addEventListener('click', openFullStory);
@@ -4973,6 +4983,7 @@
       storyModal.classList.remove('flex');
       // 從小黃本打開的故事書，關閉後回到小黃本
       if (storyFromBag) { storyFromBag = false; openBagModal(); }
+      else ensureSceneVisible();
     });
 
 
@@ -5031,6 +5042,7 @@
       document.getElementById('cert-modal').classList.add('hidden');
       document.getElementById('cert-modal').classList.remove('flex');
       if (certFromBag) { certFromBag = false; openBagModal(); }
+      else ensureSceneVisible();
     });
     document.getElementById('btn-download-cert').addEventListener('click', () => {
       const cv = document.getElementById('cert-canvas');
