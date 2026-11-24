@@ -605,10 +605,6 @@
         + `<path d="M19 50 L32 55 L45 50" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/>`
         + `<circle cx="32" cy="54" r="2.8" fill="#92400e"/></svg>`;
     }
-    function renderAvatars() {
-      $('hud-avatar').innerHTML = mowgliSVG();
-      if (mode === 'map' && M) renderForestMap();
-    }
 
 
     // =========================================================================
@@ -847,11 +843,6 @@
       chars.forEach((c, i) => { const [x, y, w] = slots[i] || slots[slots.length - 1]; s += `<ellipse cx="${x + w / 2}" cy="${y + w - 2}" rx="${w * 0.36}" ry="5" fill="#000" opacity=".18"/>` + nest(c, x, y, w, w); });
       if (chars.vs) s += `<text x="150" y="82" font-size="22" font-weight="900" text-anchor="middle" fill="#fde047" stroke="${ink}" stroke-width="1.2">VS</text>`;
       return svgWrap(s, cls, '0 0 320 130');
-    }
-    function badgePatch(icon, i) {
-      const rims = ['#16a34a', '#dc2626', '#2563eb', '#d97706', '#7c3aed', '#0891b2'];
-      const rim = rims[i % rims.length];
-      return svgWrap(`<circle cx="32" cy="32" r="30" fill="${rim}"/><circle cx="32" cy="32" r="25" fill="#fffbeb"/><circle cx="32" cy="32" r="27.5" fill="none" stroke="#fff" stroke-width="1.2" stroke-dasharray="2.5 2.5"/><text x="32" y="41" font-size="24" text-anchor="middle">${escapeHtml(icon)}</text>`, 'w-12 h-12 shrink-0');
     }
 
 
@@ -1683,17 +1674,6 @@
       clearProgress();
     }
 
-    function grantProgressForStage(stageIdx) {
-      if (!Array.isArray(state.completedProgress)) state.completedProgress = [];
-      const newly = [];
-      PROGRESS_ITEMS.forEach(item => {
-        if (item.stage === stageIdx && !state.completedProgress.includes(item.id)) {
-          state.completedProgress.push(item.id);
-          newly.push(item);
-        }
-      });
-      return newly;
-    }
 
     function syncProgressSkillPoints() {
       if (typeof state.skillPoints !== 'number') state.skillPoints = 1;
@@ -1728,6 +1708,18 @@
       document.getElementById('stat-atk').textContent = eff.atk;
       document.getElementById('stat-def').textContent = eff.def;
       document.getElementById('act-heal').textContent = `🍯 蜂蜜補血 (${state.honey})`;
+    }
+
+    // 任何蓋在遊戲上的視窗打開時，暫停森林與路標遠征（敵人不會在背景攻擊）
+    const BLOCKING_MODALS = ['bag-modal', 'arcade-modal', 'tutorial-modal', 'story-modal', 'cert-modal', 'badge-trial-modal', 'setup-modal'];
+    function uiBlocking() {
+      return BLOCKING_MODALS.some(id => { const el = document.getElementById(id); return el && !el.classList.contains('hidden'); });
+    }
+    // 關閉小黃本後要接續的流程（例如技能章奇遇結束後回到森林／進程提醒）
+    let afterBagClose = null;
+    function resumeIfFrozen() {
+      // 森林迴圈被停掉、但畫面還停在地圖 → 接回原本那座森林
+      if (mode === 'map' && forestData && !forestRaf && forestData.idx === state.stageIdx && !state.cleared[state.stageIdx]) runForestLoop();
     }
 
     function stageTop() {
@@ -2009,12 +2001,6 @@
       }, 2200);
     }
 
-    function distToSegment(px, py, x1, y1, x2, y2) {
-      const dx = x2 - x1, dy = y2 - y1;
-      const len2 = dx * dx + dy * dy || 1;
-      const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / len2));
-      return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
-    }
 
     // 森林迷宮：一樣用搖桿自由走動（不是走格子），樹籬就是迷宮的牆
     function generateFreeForest(idx) {
@@ -2273,7 +2259,7 @@
         if (mode !== 'map') return;
         const dt = Math.min(0.05, (ts - forestLastTs) / 1000);
         forestLastTs = ts;
-        updateForest(dt);
+        if (!uiBlocking()) updateForest(dt);
         drawForest(ts);
         forestRaf = requestAnimationFrame(loop);
       };
@@ -2784,10 +2770,10 @@
         bonusTxt = ` ⬆️ 鍛鍊升級至 Lv.${state.level}！`;
         if (playedKind && !state.arcadeWins.includes(playedKind)) {
           state.arcadeWins.push(playedKind);
-          state.skillPoints = (state.skillPoints || 0) + 1;
+          state.honey = Math.min(6, (state.honey || 0) + 1);
           saveProgress();
           updateHud();
-          bonusTxt += ' ⭐ 首次通關再送 1 顆天賦星點！';
+          bonusTxt += ' 🍯 首次通關再送 1 罐森林蜂蜜！';
         }
         mode = 'title';
         const showArcadeDone = () => {
@@ -2950,7 +2936,7 @@
         if (mode !== 'minigame' || mgKind !== 'beacon') return;
         const dt = Math.min(0.05, (ts - last) / 1000);
         last = ts;
-        if (!mgState.paused) stepBeaconGame(dt);
+        if (!mgState.paused && !uiBlocking()) stepBeaconGame(dt);
         if (mode !== 'minigame' || mgKind !== 'beacon' || !mgState) return;
         drawBeaconGame(ts);
         mgRaf = requestAnimationFrame(loop);
@@ -3444,16 +3430,26 @@
       mgCtx.textAlign = 'center';
       mgCtx.fillText(`能量 Lv.${s.xpLv}（XP ${s.xp}/${s.xpNeed}）`, w / 2, 20);
 
+      // 小狼體力條（練習場與技能章試煉用的是獨立體力，不會扣主線）
+      const hpPct = Math.max(0, Math.min(1, s.player.hp / s.player.maxHp));
+      mgCtx.fillStyle = 'rgba(0,0,0,0.5)';
+      mgCtx.fillRect(10, 28, w - 20, 12);
+      mgCtx.fillStyle = hpPct < 0.3 ? '#ef4444' : '#4ade80';
+      mgCtx.fillRect(10, 28, (w - 20) * hpPct, 12);
+      mgCtx.fillStyle = '#ffffff';
+      mgCtx.font = 'bold 9px "Noto Sans TC", sans-serif';
+      mgCtx.fillText(`❤️ 體力 ${Math.round(s.player.hp)} / ${s.player.maxHp}${s.liveHp ? '' : '（練習用，不扣主線）'}`, w / 2, 37);
+
       // Boss 血條
       if (s.boss) {
         const bw = w - 40;
         mgCtx.fillStyle = 'rgba(0,0,0,0.65)';
-        mgCtx.beginPath(); mgCtx.roundRect(20, 30, bw, 16, 8); mgCtx.fill();
+        mgCtx.beginPath(); mgCtx.roundRect(20, 46, bw, 16, 8); mgCtx.fill();
         mgCtx.fillStyle = '#e11d48';
-        mgCtx.beginPath(); mgCtx.roundRect(20, 30, bw * Math.max(0, s.boss.hp / s.boss.maxHp), 16, 8); mgCtx.fill();
+        mgCtx.beginPath(); mgCtx.roundRect(20, 46, bw * Math.max(0, s.boss.hp / s.boss.maxHp), 16, 8); mgCtx.fill();
         mgCtx.fillStyle = '#ffffff';
         mgCtx.font = 'bold 10px "Noto Sans TC", sans-serif';
-        mgCtx.fillText(`👑 迷霧守護者 ${Math.max(0, Math.ceil(s.boss.hp))} / ${s.boss.maxHp}`, w / 2, 41);
+        mgCtx.fillText(`👑 迷霧守護者 ${Math.max(0, Math.ceil(s.boss.hp))} / ${s.boss.maxHp}`, w / 2, 57);
       }
 
       // 搖桿提示
@@ -3767,7 +3763,7 @@
       mgState = { round: 0, totalRounds: isTrialK ? 2 : 3, targets: [], found: new Set(), phase: 'observe' };
       document.getElementById('mg-title').textContent = isTrialK ? `${activeBadgeTrial.badge.icon} ${activeBadgeTrial.badge.name}・觀察闖關` : '🔍 金氏遊戲：營火裝備觀察';
       document.getElementById('mg-sub').textContent = '限時記住出現的童軍裝備，再把它們找出來！';
-      document.getElementById('mg-progress').textContent = '第 1 / 3 關';
+      document.getElementById('mg-progress').textContent = `第 1 / ${mgState.totalRounds} 關`;
       startKimRound();
     }
 
@@ -3859,7 +3855,7 @@
               s.round++;
               Sfx.win();
               if (s.round >= s.totalRounds) {
-                const tid = setTimeout(() => finishMiniGame('金氏遊戲 3 關全過！你的童軍觀察力超強！'), 700);
+                const tid = setTimeout(() => finishMiniGame(`金氏遊戲 ${s.totalRounds} 關全過！你的童軍觀察力超強！`), 700);
                 mgTimers.push(tid);
               } else {
                 fbEl.textContent = '🎉 過關！準備下一回合…';
@@ -4082,7 +4078,7 @@
       const spTotalGain = 1 + progSp;
       const outroLines = [
         ...st.outro,
-        { av: '⬆️', sp: '升級與進程提醒', txt: `冒險升級到 Lv.${state.level}（目前級別：${getCurrentEarnedRank()}），並獲得 ⭐ ${spTotalGain} 顆天賦星點！記得完成 1 項「📘 進程核章」並到「🌳 技能章樹」挑戰升級喔！` }
+        { av: '⬆️', sp: '升級與進程提醒', txt: `冒險升級到 Lv.${state.level}（目前級別：${getCurrentEarnedRank()}）。記得完成 1 項「📘 進程核章」，探索森林時也可能遇到技能章奇遇喔！` }
       ];
 
       startDialogue(outroLines, () => {
@@ -4208,6 +4204,7 @@
           resumeBtn.addEventListener('click', () => {
             bagModal.classList.add('hidden');
             bagModal.classList.remove('flex');
+            afterBagClose = null;
             startChapter(state.stageIdx);
           });
         }
@@ -4337,18 +4334,6 @@
           </div>
         `;
 
-        list.querySelectorAll('[data-swtalent]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const nt = btn.getAttribute('data-swtalent');
-            if (TALENTS[nt]) {
-              state.talent = nt;
-              selectedTreeBadgeId = TALENTS[nt].badges[0].id;
-              saveProgress();
-              Sfx.coin();
-              renderBagTab();
-            }
-          });
-        });
         list.querySelectorAll('[data-tree-node]').forEach(btn => {
           btn.addEventListener('click', () => {
             selectedTreeBadgeId = btn.getAttribute('data-tree-node');
@@ -4417,9 +4402,7 @@
             saveProgress();
             updateHud();
             fb.className = 'text-xs font-black text-emerald-300 min-h-[16px]';
-            fb.textContent = bonusSp > 0
-              ? `✅ 核章成功！【${item.rank}・${item.title}】達成！⭐ 額外獲得 ${bonusSp} 顆天賦星點！`
-              : `✅ 核章成功！【${item.rank}・${item.title}】已達成！`;
+            fb.textContent = `✅ 核章成功！【${item.rank}・${item.title}】已達成！`;
             renderBagTab();
             setTimeout(() => {
               box.classList.add('hidden');
@@ -4623,6 +4606,7 @@
       stageTop();
       const cfg = BADGE_TRIALS[badge.id] || { mg: 'compass', mgLabel: '八方位羅盤定向（4 次）', qs: [] };
       activeBadgeTrial = { badge, cfg, stage: 'intro', qIdx: 0, onExit: opts.onExit || null };
+      afterBagClose = null;
       bagModal.classList.add('hidden');
       bagModal.classList.remove('flex');
       overlay.classList.add('hidden');
@@ -4783,6 +4767,9 @@
       document.getElementById('btn-bt-tree').addEventListener('click', () => {
         const m = document.getElementById('badge-trial-modal');
         m.classList.add('hidden'); m.classList.remove('flex');
+        // 看完技能樹、關閉小黃本後，接回原本的冒險流程
+        afterBagClose = window.__btAfterUpgrade || (() => startChapter(state.stageIdx));
+        window.__btAfterUpgrade = null;
         activeBagTab = 'talent';
         openBagModal();
       });
@@ -4850,7 +4837,7 @@
         {
           badge: '步驟 5 / 5・小狼宣誓出發',
           icon: '🐺',
-          title: `歡迎加入【${state.squad || '棕小隊'}】，${state.playerName || '毛克利'}！`,
+          title: `歡迎加入【${escapeHtml(state.squad || '棕小隊')}】，${escapeHtml(state.playerName || '毛克利')}！`,
           desc: '阿克拉：「小狼們，準備好喊出幼童軍大吼聲 DYB（盡我所能），展開《叢林奇談》大冒險了嗎？」',
           isFinal: true,
           tips: [
@@ -4905,6 +4892,7 @@
     }
 
     function closeTutorial(runCallback) {
+      Speech.stop();
       const m = document.getElementById('tutorial-modal');
       m.classList.add('hidden');
       m.classList.remove('flex');
@@ -4927,11 +4915,17 @@
     document.getElementById('btn-close-bag').addEventListener('click', () => {
       bagModal.classList.add('hidden');
       bagModal.classList.remove('flex');
+      Speech.stop();
+      const next = afterBagClose;
+      afterBagClose = null;
+      if (typeof next === 'function') next();
+      else resumeIfFrozen();
     });
 
     ovStoryBtn.addEventListener('click', openFullStory);
     let storyFromBag = false;
     document.getElementById('btn-close-story').addEventListener('click', () => {
+      Speech.stop();
       storyModal.classList.add('hidden');
       storyModal.classList.remove('flex');
       // 從小黃本打開的故事書，關閉後回到小黃本
@@ -4983,14 +4977,17 @@
       storyFromBag = true;
       openFullStory();
     });
+    let certFromBag = false;
     document.getElementById('btn-open-cert-from-bag').addEventListener('click', () => {
       bagModal.classList.add('hidden');
       bagModal.classList.remove('flex');
+      certFromBag = true;
       openCertModal();
     });
     document.getElementById('btn-close-cert').addEventListener('click', () => {
       document.getElementById('cert-modal').classList.add('hidden');
       document.getElementById('cert-modal').classList.remove('flex');
+      if (certFromBag) { certFromBag = false; openBagModal(); }
     });
     document.getElementById('btn-download-cert').addEventListener('click', () => {
       const cv = document.getElementById('cert-canvas');
@@ -5007,7 +5004,7 @@
     });
     // 關閉練習場：如果正在冒險中就留在原畫面；否則回到森林（保留進度）或標題畫面
     function returnFromArcade() {
-      const inScene = ['map', 'battle', 'quiz', 'dialogue'].includes(mode) || !overlay.classList.contains('hidden');
+      const inScene = ['map', 'battle', 'quiz', 'dialogue'].includes(mode) || (mode === 'minigame' && !!mgKind) || !overlay.classList.contains('hidden');
       if (inScene) return;
       stopMiniGame();
       hideAllPanels();
@@ -5084,6 +5081,7 @@
     document.getElementById('btn-sound').textContent = Sfx.enabled ? '🔊' : '🔇';
     document.getElementById('btn-sound').addEventListener('click', (e) => {
       const on = Sfx.toggle();
+      if (!on) Speech.stop();
       e.currentTarget.textContent = on ? '🔊' : '🔇';
     });
     document.getElementById('btn-tutorial').addEventListener('click', () => {
@@ -5091,6 +5089,10 @@
     });
     document.getElementById('btn-bt-close').addEventListener('click', () => {
       Sfx.blip();
+      Speech.stop();
+      // 先記住奇遇結束後該回到哪裡，關閉小黃本時再接回去
+      afterBagClose = (activeBadgeTrial && activeBadgeTrial.onExit) || null;
+      stopMiniGame();
       activeBadgeTrial = null;
       const m = document.getElementById('badge-trial-modal');
       m.classList.add('hidden');
