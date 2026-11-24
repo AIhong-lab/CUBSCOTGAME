@@ -1712,6 +1712,10 @@
 
     // 任何蓋在遊戲上的視窗打開時，暫停森林與路標遠征（敵人不會在背景攻擊）
     const BLOCKING_MODALS = ['bag-modal', 'arcade-modal', 'tutorial-modal', 'story-modal', 'cert-modal', 'badge-trial-modal', 'setup-modal'];
+    // 技能章試煉、報到、新手教學這些「最上層」視窗開著時，不讓頂部按鈕把別的視窗開在它後面
+    function topModalOpen() {
+      return ['badge-trial-modal', 'setup-modal', 'tutorial-modal'].some(id => { const el = document.getElementById(id); return el && !el.classList.contains('hidden'); });
+    }
     function uiBlocking() {
       return BLOCKING_MODALS.some(id => { const el = document.getElementById(id); return el && !el.classList.contains('hidden'); });
     }
@@ -3873,6 +3877,7 @@
     }
 
     function openArcadeModal() {
+      if (topModalOpen()) return;
       stageTop();
       Sfx.blip();
       arcadeModal.classList.remove('hidden');
@@ -4426,6 +4431,7 @@
     }
 
     function openBagModal() {
+      if (topModalOpen()) return;
       stageTop();
       Sfx.blip();
       document.getElementById('prog-challenge-box').classList.add('hidden');
