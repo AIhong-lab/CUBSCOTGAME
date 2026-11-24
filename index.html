@@ -1517,11 +1517,12 @@
     // 進程等級門檻與順序規則：
     // 1~4 級：剛入團（最基本）｜4 級以上：羚羊級｜10 級以上：狼級｜20 級以上：鹿級｜30 級以上：豹級
     const RANK_DEFS = [
-      { rank: '剛入團', minLv: 1,  prev: null,    badge: '🐾', desc: 'Lv.1 起・最基本階段' },
-      { rank: '羚羊級', minLv: 4,  prev: '剛入團', badge: '🦌', desc: 'Lv.4 以上開放' },
-      { rank: '狼級',   minLv: 10, prev: '羚羊級', badge: '🐺', desc: 'Lv.10 以上開放' },
-      { rank: '鹿級',   minLv: 20, prev: '狼級',   badge: '🫎', desc: 'Lv.20 以上開放' },
-      { rank: '豹級',   minLv: 30, prev: '鹿級',   badge: '🐆', desc: 'Lv.30 以上開放' }
+      // openStage：要進入這一級的故事線（第 N 篇）才開放，避免兩級在同一次核完
+      { rank: '剛入團', minLv: 1,  prev: null,    openStage: 0,  badge: '🐾', desc: 'Lv.1 起・第 1～2 篇' },
+      { rank: '羚羊級', minLv: 4,  prev: '剛入團', openStage: 2,  badge: '🦌', desc: 'Lv.4＋進入第 3 篇開放' },
+      { rank: '狼級',   minLv: 10, prev: '羚羊級', openStage: 4,  badge: '🐺', desc: 'Lv.10＋進入第 5 篇開放' },
+      { rank: '鹿級',   minLv: 20, prev: '狼級',   openStage: 7,  badge: '🫎', desc: 'Lv.20＋進入第 8 篇開放' },
+      { rank: '豹級',   minLv: 30, prev: '鹿級',   openStage: 10, badge: '🐆', desc: 'Lv.30＋進入第 11 篇開放' }
     ];
 
     // 12 篇故事線的進程關卡門檻（未通過該進程會停留在原進程，無法進入後續故事線）
@@ -1553,6 +1554,9 @@
       }
       if ((state.level || 1) < def.minLv) {
         return { ok: false, reason: `需先升到 Lv.${def.minLv} 以上` };
+      }
+      if ((state.reachedStage || 0) < def.openStage) {
+        return { ok: false, reason: `要先出發第 ${def.openStage + 1} 篇（${def.rank}故事線）才開放` };
       }
       return { ok: true, reason: '' };
     }
@@ -1612,6 +1616,7 @@
       arcadeWins: [],
       pendingProgressCount: 0,
       tutorialDone: false,
+      reachedStage: 0,
       cleared: new Array(12).fill(false)
     };
 
@@ -1681,6 +1686,7 @@
         arcadeWins: [],
         pendingProgressCount: 0,
         tutorialDone: false,
+      reachedStage: 0,
         easy: !!selectedEasy,
         cleared: new Array(12).fill(false)
       };
@@ -2247,6 +2253,7 @@
 
     function enterForestMap(idx) {
       state.stageIdx = idx;
+      state.reachedStage = Math.max(state.reachedStage || 0, idx); // 走到過的最遠篇章（決定開放哪一級進程）
       saveProgress();
       updateHud();
       mode = 'map';
@@ -4191,7 +4198,7 @@
             <div class="flex items-center justify-between gap-2">
               <div>
                 <div class="font-black text-sm text-amber-300">📘 幼童軍 5 級進程（目前：${curRank}）</div>
-                <div class="text-[11px] text-emerald-100 mt-0.5">Lv.1 起 剛入團｜Lv.4+ 羚羊｜Lv.10+ 狼｜Lv.20+ 鹿｜Lv.30+ 豹</div>
+                <div class="text-[11px] text-emerald-100 mt-0.5">一次專心過一級：剛入團（第 1～2 篇）→ 羚羊（Lv.4＋第 3 篇）→ 狼（Lv.10＋第 5 篇）→ 鹿（Lv.20＋第 8 篇）→ 豹（Lv.30＋第 11 篇）</div>
               </div>
               <div class="text-right shrink-0">
                 <div class="font-black text-base text-amber-300">${doneTotal}/${PROGRESS_ITEMS.length}</div>
@@ -4924,7 +4931,7 @@
           badge: '步驟 3 / 5・升級與 5 級進程關卡',
           icon: '📘',
           title: '每次升級完成 1 項進程，解鎖完整故事！',
-          desc: '進程依等級分階段開放：Lv.1 起剛入團（最基本）→ Lv.4+ 羚羊 → Lv.10+ 狼 → Lv.20+ 鹿 → Lv.30+ 豹！',
+          desc: '進程依等級與故事線分階段開放：剛入團（第 1～2 篇）→ 羚羊 Lv.4＋第 3 篇 → 狼 Lv.10＋第 5 篇 → 鹿 Lv.20＋第 8 篇 → 豹 Lv.30＋第 11 篇！一次只能專心過一級。',
           tips: [
             '🔒 如果一直沒通過目前進程，雖然還能繼續升級，但級別會停在原地、無法解鎖下一段主線故事！',
             '⚡ 破關或鍛鍊升級後，記得點「🎖️ 榮譽帶 → 📘 進程核章」挑戰過關！'
@@ -5239,6 +5246,10 @@
         (saved.completedProgress || []).length > 0 || (saved.unlockedBadges || []).length > 0 || saved.tutorialDone);
       if (hasProgress) {
         state = { ...state, ...saved };
+        if (typeof saved.reachedStage !== 'number') {
+          const lastCleared = state.cleared.lastIndexOf(true);
+          state.reachedStage = Math.max(0, lastCleared);
+        }
         if (state.cleared.every(Boolean) && isRankCompleted('豹級')) {
           updateHud();
           mode = 'victory';
