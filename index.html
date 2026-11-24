@@ -366,17 +366,18 @@
             <input id="setup-name" type="text" maxlength="12" placeholder="例如：毛克利、王小明" class="w-full px-3.5 py-2.5 rounded-xl bg-white/95 text-emerald-950 font-black text-sm border-2 border-amber-300 focus:outline-none" />
           </div>
           <div>
-            <div class="text-xs font-bold text-amber-200 mb-1.5">選擇年級（之後可在「🎖️ 榮譽帶 → 🎒 冒險道具」切換）</div>
+            <div class="text-xs font-bold text-amber-200 mb-1.5">先選版本（之後可在「🎖️ 榮譽帶 → 🎒 冒險道具」切換）</div>
             <div class="grid grid-cols-2 gap-2">
               <button data-grade="easy" type="button" class="grade-opt p-2.5 rounded-xl border-2 border-white/20 bg-white/10 text-left transition">
-                <div class="font-black text-sm text-amber-200">🐣 低年級（1～3 年級）</div>
-                <div class="text-[11px] text-emerald-100">會唸給你聽・大字・2 選 1・迷宮小一點</div>
+                <div class="font-black text-sm text-amber-200">🐣 語音輕鬆版</div>
+                <div class="text-[11px] text-emerald-100">推薦小一～小三・會唸給你聽・大字・2 選 1</div>
               </button>
               <button data-grade="normal" type="button" class="grade-opt p-2.5 rounded-xl border-2 border-white/20 bg-white/10 text-left transition">
-                <div class="font-black text-sm text-amber-200">🐺 中高年級（4～6 年級）</div>
-                <div class="text-[11px] text-emerald-100">標準難度・3 選 1</div>
+                <div class="font-black text-sm text-amber-200">🐺 標準探險版</div>
+                <div class="text-[11px] text-emerald-100">推薦小四～小六・3 選 1・迷宮比較大</div>
               </button>
             </div>
+            <div id="grade-warn" class="hidden mt-1.5 text-xs font-black text-rose-300">👆 請先選一個版本再出發（不會讀字的小狼選「語音輕鬆版」）</div>
           </div>
           <div>
             <div class="text-xs font-bold text-amber-200 mb-1.5">選擇你的小隊（天賦加成）</div>
@@ -536,6 +537,17 @@
             u.lang = 'zh-TW';
             if (voice) u.voice = voice;
             u.rate = 0.9;
+            speechSynthesis.speak(u);
+          } catch (e) {}
+        },
+        // 排在目前這句後面播報，不打斷（戰況、團康提示用）
+        add(text) {
+          if (!ok || !state.easy || !Sfx.enabled || !text) return;
+          try {
+            const u = new SpeechSynthesisUtterance(clean(text));
+            u.lang = 'zh-TW';
+            if (voice) u.voice = voice;
+            u.rate = 0.95;
             speechSynthesis.speak(u);
           } catch (e) {}
         },
@@ -3513,11 +3525,14 @@
       ]
     };
 
+    // 語音輕鬆版：前面的步驟先幫忙完成，只要排最後 3 步
+    const knotStart = (k) => (state.easy ? Math.max(0, k.steps.length - 3) : 0);
+
     function initKnotGame(setName) {
       const isTrialKn = !!(activeBadgeTrial && activeBadgeTrial.stage === 'mg');
       const fullList = KNOT_BANK[setName] || KNOT_BANK.wolf;
       const list = isTrialKn ? fullList.slice(0, 2) : fullList;
-      mgState = { list, idx: 0, step: 0, mistakes: 0, hint: false };
+      mgState = { list, idx: 0, step: knotStart(list[0]), mistakes: 0, hint: false };
       document.getElementById('knot-icon').innerHTML = svgWrap(ART.rope(), 'w-10 h-10');
       document.getElementById('mg-title').textContent = isTrialKn ? `${activeBadgeTrial.badge.icon} ${activeBadgeTrial.badge.name}・結繩闖關` : '🪢 結繩高手試煉';
       document.getElementById('mg-progress').textContent = `繩結 0 / ${list.length}`;
@@ -3532,7 +3547,7 @@
       document.getElementById('knot-name').textContent = `🪢 ${k.name}`;
       document.getElementById('knot-use').textContent = k.use;
       document.getElementById('knot-mnemonic').textContent = k.mnemonic;
-      if (s.step === 0 && !feedback) Speech.say(`${k.name}。${k.use}。${k.mnemonic}。請照順序點出打結的步驟。`);
+      const isStart = s.step === knotStart(k) && !feedback;
       document.getElementById('knot-count').textContent = `${s.step} / ${k.steps.length}`;
       document.getElementById('knot-done').innerHTML = k.steps.map((t, i) => i < s.step
         ? `<li class="flex gap-2 text-xs font-bold text-emerald-900"><span class="shrink-0 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]">${i + 1}</span><span>${t}</span></li>`
@@ -3544,6 +3559,9 @@
       const fb = document.getElementById('knot-feedback');
       fb.className = `text-xs font-black text-center min-h-[18px] ${good ? 'text-emerald-700' : 'text-rose-700'}`;
       fb.textContent = feedback;
+      // 唸出：開場介紹（第一次）＋回饋＋這一步的選項
+      const intro = isStart ? `${k.name}。${k.use}。${k.mnemonic}。${s.step > 0 ? `前面 ${s.step} 步已經幫你做好了。` : ''}` : '';
+      Speech.say(`${intro}${feedback ? feedback + '。' : ''}下一步是哪一個？${remaining.map((i, n) => `第${n + 1}個，${k.steps[i]}`).join('。')}`);
     }
 
     function handleKnotChoice(i) {
@@ -3569,7 +3587,7 @@
           const tid = setTimeout(() => {
             if (!mgState || mgKind !== 'knot') return;
             if (s.idx >= s.list.length) { finishMiniGame('你把每個繩結的打法步驟都排對了，是真正的結繩高手！'); return; }
-            s.step = 0; s.busy = false;
+            s.step = knotStart(s.list[s.idx]); s.busy = false;
             renderKnot();
           }, 1600);
           mgTimers.push(tid);
@@ -3580,7 +3598,7 @@
         s.mistakes++;
         Sfx.hit();
         // 「結繩判定放寬」技能章：答錯後提示正確的下一步
-        s.hint = getBadgeBuffs().knotForgive > 0 || s.mistakes >= 3;
+        s.hint = getBadgeBuffs().knotForgive > 0 || s.mistakes >= (state.easy ? 2 : 3);
         renderKnot(`❌ 這一步還沒到喔！先想想：${k.mnemonic.replace('口訣：', '')}`, false);
       }
     }
@@ -3793,6 +3811,7 @@
       document.getElementById('mg-progress').textContent = `第 ${s.round + 1} / ${s.totalRounds} 關`;
       promptEl.textContent = isMissingMode ? '🕵️ 進階題：記住這 5 樣，待會會少 1 樣！' : `🔥 仔細記住這 ${count} 樣童軍裝備！`;
       fbEl.textContent = '布幔即將蓋上，睜大眼睛觀察喔！';
+      Speech.say(`${promptEl.textContent}。有：${s.shownItems.map(it => it.name).join('、')}。`);
 
       gridEl.innerHTML = s.shownItems.map(it => `
         <div class="p-3 rounded-2xl bg-amber-50 border-2 border-amber-400 flex flex-col items-center justify-center gap-1 shadow-sm">
@@ -3830,6 +3849,7 @@
       promptEl.textContent = s.isMissingMode
         ? '🕵️ 剛剛少了哪一樣裝備？把它點出來！'
         : `🎯 點出剛剛看到的 ${s.targets.length} 樣裝備！`;
+      Speech.say(promptEl.textContent);
       timerEl.textContent = s.isMissingMode ? '找出缺少的 1 樣' : `已找 0 / ${s.targets.length}`;
       fbEl.textContent = s.isMissingMode
         ? `目前還留在營火旁：${s.shownItems.slice(1).map(x => x.icon + x.name).join('、')}`
@@ -3989,7 +4009,7 @@
         const finalDmg = defending ? Math.max(2, Math.floor(reduced * 0.4)) : reduced;
         state.hp = Math.max(0, state.hp - finalDmg);
         Sfx.hit();
-        logEl.textContent = `💥 ${st.enemy.name} 反擊！毛克利受到 ${finalDmg} 點傷害！`;
+        logEl.textContent = `💥 ${st.enemy.name} 反擊！${state.playerName || '毛克利'}受到 ${finalDmg} 點傷害！`;
         updateBattleUI();
 
         if (state.hp <= 0) {
@@ -4109,7 +4129,13 @@
           state.chaptersSinceBadge = (state.chaptersSinceBadge || 0) + 1;
           const badgeChance = state.chaptersSinceBadge >= 2 ? 1.0 : 0.65;
           const showProgStep = () => {
-            showOverlay('⬆️', `升級 Lv.${state.level}！`, '每次升級都要完成 1 項進程！', `你目前級別是「${getCurrentEarnedRank()}」。請先到「📘 進程核章」挑戰過關，再繼續第 ${nextIdx + 1} 篇故事線！`, '📘 前往完成進程核章', () => {
+            const g = checkChapterGate(nextIdx);
+            const title = g.ok ? '每次升級都要完成 1 項進程！' : `第 ${nextIdx + 1} 篇要先完成【${g.gate.reqRank}】進程！`;
+            const sub = g.ok
+              ? `你目前級別是「${getCurrentEarnedRank()}」。請先到「📘 進程核章」挑戰過關，再從小黃本按「繼續」出發第 ${nextIdx + 1} 篇！`
+              : `【${g.gate.reqRank}】進程目前完成 ${g.doneCnt} / ${g.totalCnt} 項${g.lvOk ? '' : `，而且要升到 Lv.${g.gate.minLv}`}。全部核章後才能進入第 ${nextIdx + 1} 篇，點下面的按鈕馬上去小黃本！`;
+            const btn = g.ok ? '📘 前往完成進程核章' : `📘 前往【${g.gate.reqRank}】進程核章（${g.doneCnt}/${g.totalCnt}）`;
+            showOverlay(g.ok ? '⬆️' : '📘', `升級 Lv.${state.level}！`, title, sub, btn, () => {
               overlay.classList.add('hidden');
               activeBagTab = 'progress';
               openBagModal();
@@ -4476,6 +4502,8 @@
     }
     document.querySelectorAll('.grade-opt').forEach(btn => btn.addEventListener('click', () => {
       selectedEasy = btn.getAttribute('data-grade') === 'easy';
+      document.getElementById('grade-warn').classList.add('hidden');
+      if (selectedEasy) Speech.say('你選了語音輕鬆版，我會把故事和題目唸給你聽喔！', true);
       Sfx.blip();
       paintGradeOpts();
     }));
@@ -4487,7 +4515,8 @@
       nameInput.value = state.playerName === '毛克利' ? '' : state.playerName;
       selectedSquad = state.squad || '棕小隊';
       selectedTalent = state.talent || 'service';
-      selectedEasy = !!state.easy;
+      selectedEasy = null; // 新冒險一定要自己選版本，不預設
+      document.getElementById('grade-warn').classList.add('hidden');
       paintGradeOpts();
       document.querySelectorAll('.squad-opt').forEach(b => {
         const active = b.getAttribute('data-squad') === selectedSquad;
@@ -4506,6 +4535,14 @@
       modal.classList.remove('hidden');
       modal.classList.add('flex');
       document.getElementById('btn-setup-start').onclick = () => {
+        if (selectedEasy === null) {
+          const warn = document.getElementById('grade-warn');
+          warn.classList.remove('hidden');
+          warn.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          Sfx.hit();
+          Speech.say('請先選一個版本。不會讀字的小狼，請選語音輕鬆版。', true);
+          return;
+        }
         const nm = nameInput.value.trim() || '毛克利';
         modal.classList.add('hidden');
         modal.classList.remove('flex');
@@ -5091,6 +5128,7 @@
       e.currentTarget.textContent = on ? '🔊' : '🔇';
     });
     document.getElementById('btn-tutorial').addEventListener('click', () => {
+      if (topModalOpen()) return;
       openTutorialModal(null);
     });
     document.getElementById('btn-bt-close').addEventListener('click', () => {
@@ -5181,6 +5219,20 @@
         });
       }
     }
+    // 🐣 語音輕鬆版：戰鬥戰況、團康提示、地圖提示與擋關說明也會唸出來
+    [['battle-log', () => mode === 'battle'], ['mg-toast', () => mode === 'minigame'], ['mg-sub', () => mode === 'minigame' && mgKind !== 'knot'],
+     ['map-toast', () => mode === 'map'], ['ov-sub', () => !overlay.classList.contains('hidden') && mode !== 'title']].forEach(([id, when]) => {
+      const el = document.getElementById(id);
+      if (!el || typeof MutationObserver === 'undefined') return;
+      let lastText = '';
+      new MutationObserver(() => {
+        const t = el.textContent.trim();
+        if (!t || t === lastText || !when()) return;
+        lastText = t;
+        if (id === 'ov-sub') Speech.say(`${document.getElementById('ov-title').textContent}。${t}`);
+        else Speech.add(t);
+      }).observe(el, { childList: true, characterData: true, subtree: true });
+    });
     window.onload = showTitleScreen;
   </script>
 </body>
