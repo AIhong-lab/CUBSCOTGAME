@@ -303,6 +303,7 @@
           <div id="pc-fb" class="text-xs font-bold min-h-[16px]"></div>
         </div>
         <div id="bag-list" class="flex-1 overflow-y-auto py-2.5 space-y-2.5"></div>
+        <div id="bag-next" class="hidden shrink-0 pt-2.5 border-t border-white/15"></div>
       </div>
 
       <!-- Full Story Book Modal -->
@@ -4164,6 +4165,7 @@
     let selectedTreeBadgeId = null;
 
     function renderBagTab() {
+      setTimeout(() => renderBagNext(false), 0);
       if (!Array.isArray(state.completedProgress)) state.completedProgress = [];
       if (!Array.isArray(state.unlockedBadges)) state.unlockedBadges = [];
       const list = document.getElementById('bag-list');
@@ -4197,7 +4199,7 @@
               </div>
             </div>
             ${(state.pendingProgressCount || 0) > 0 ? `<div class="px-2.5 py-1.5 rounded-lg bg-emerald-500/25 border border-emerald-300/50 text-[11px] font-black text-emerald-200">⬆️ 你剛剛升級了！請點下方「⚡ 挑戰核章」完成本級進程（剩餘提醒 ${state.pendingProgressCount} 次）</div>` : ''}
-            ${!nextGate.ok ? `<div class="px-2.5 py-1.5 rounded-lg bg-rose-500/25 border border-rose-300/50 text-[11px] font-black text-rose-200">🔒 第 ${state.stageIdx + 1} 篇故事線鎖定中：需完成【${nextGate.gate.reqRank}】全部進程並達 Lv.${nextGate.gate.minLv}</div>` : `<button id="btn-bag-resume-story" type="button" class="w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-emerald-950 font-black text-xs shadow">🚀 ${CHAPTER_GATES[state.stageIdx] ? '進程已達標！' : ''}繼續第 ${state.stageIdx + 1} 篇森林冒險</button>`}
+            ${!nextGate.ok ? `<div class="px-2.5 py-1.5 rounded-lg bg-rose-500/25 border border-rose-300/50 text-[11px] font-black text-rose-200">🔒 第 ${state.stageIdx + 1} 篇故事線鎖定中：需完成【${nextGate.gate.reqRank}】全部進程並達 Lv.${nextGate.gate.minLv}</div>` : ''}
           </div>
         `;
         RANK_DEFS.forEach(rd => {
@@ -4239,15 +4241,6 @@
         list.querySelectorAll('[data-pcheck]').forEach(btn => {
           btn.addEventListener('click', () => startProgressChallenge(btn.getAttribute('data-pcheck')));
         });
-        const resumeBtn = document.getElementById('btn-bag-resume-story');
-        if (resumeBtn) {
-          resumeBtn.addEventListener('click', () => {
-            bagModal.classList.add('hidden');
-            bagModal.classList.remove('flex');
-            afterBagClose = null;
-            startChapter(state.stageIdx);
-          });
-        }
       } else if (activeBagTab === 'talent') {
         const tObj = TALENTS[state.talent] || TALENTS.service;
         const unlocked = state.unlockedBadges;
@@ -4411,6 +4404,56 @@
       }
     }
 
+    // 小黃本底部的「下一步」：不管捲到哪裡都看得到接下來要做什麼
+    function renderBagNext(flash = false) {
+      const box = document.getElementById('bag-next');
+      const inGame = state.tutorialDone && !state.cleared.every(Boolean);
+      box.classList.toggle('hidden', !inGame);
+      if (!inGame) return;
+      const idx = state.stageIdx;
+      const g = checkChapterGate(idx);
+      const chapterName = (STAGES[idx].chapter.split('｜')[1] || '').replace(/（.*）/, '');
+      const inForest = mode === 'map' && forestData && forestData.idx === idx && !state.cleared[idx];
+      // 小黃本是在挑戰或劇情進行中打開的 → 下一步就是關掉小黃本回去
+      const inChallenge = (['battle', 'quiz', 'minigame'].includes(mode) && !state.cleared[idx]) || (mode === 'dialogue' && !rpgDialogue.classList.contains('hidden'));
+      const nextItem = (rk) => PROGRESS_ITEMS.find(it => it.rank === rk && !state.completedProgress.includes(it.id));
+      const btnCls = `w-full py-3 rounded-2xl font-black text-sm shadow-lg active:scale-95 ${flash ? 'ring-4 ring-amber-300 animate-pulse' : ''}`;
+      let html = '';
+      if (g.ok) {
+        const label = inForest ? `🌲 下一步：回到森林，繼續第 ${idx + 1} 篇` : inChallenge ? (mode === 'dialogue' ? '📖 下一步：回到故事' : `⚔️ 下一步：回到第 ${idx + 1} 篇的挑戰`) : `🚀 下一步：出發第 ${idx + 1} 篇《${chapterName}》`;
+        html = `<button id="bag-next-go" type="button" class="${btnCls} bg-emerald-500 hover:bg-emerald-400 text-emerald-950">${label}</button>`;
+      } else {
+        const rk = g.gate.reqRank;
+        const item = nextItem(rk);
+        const access = canAttemptRank(rk);
+        if (!g.rankOk && item && access.ok) {
+          html = `<div class="text-[11px] font-black text-amber-200 mb-1.5">🔒 第 ${idx + 1} 篇要先完成【${rk}】進程（${g.doneCnt}/${g.totalCnt}）</div>
+            <button id="bag-next-check" data-id="${item.id}" type="button" class="${btnCls} bg-amber-500 hover:bg-amber-400 text-emerald-950">⚡ 下一步：挑戰「${item.title}」</button>`;
+        } else if (!g.rankOk && item) {
+          html = `<div class="text-[11px] font-black text-amber-200 mb-1.5">🔒 第 ${idx + 1} 篇要先完成【${rk}】進程，但${access.reason}</div>
+            <button id="bag-next-arcade" type="button" class="${btnCls} bg-sky-500 hover:bg-sky-400 text-white">🎮 下一步：去團康鍛鍊升級（每次 +1 Lv）</button>`;
+        } else {
+          html = `<div class="text-[11px] font-black text-amber-200 mb-1.5">🔒 第 ${idx + 1} 篇需要升到 Lv.${g.gate.minLv}（目前 Lv.${state.level}）</div>
+            <button id="bag-next-arcade" type="button" class="${btnCls} bg-sky-500 hover:bg-sky-400 text-white">🎮 下一步：去團康鍛鍊升級（每次 +1 Lv）</button>`;
+        }
+      }
+      box.innerHTML = html;
+      const go = document.getElementById('bag-next-go');
+      if (go) go.onclick = () => {
+        if (inForest || inChallenge) { document.getElementById('btn-close-bag').click(); return; }
+        bagModal.classList.add('hidden');
+        bagModal.classList.remove('flex');
+        afterBagClose = null;
+        Speech.stop();
+        startChapter(idx);
+      };
+      const chk = document.getElementById('bag-next-check');
+      if (chk) chk.onclick = () => { activeBagTab = 'progress'; renderBagTab(); startProgressChallenge(chk.dataset.id); };
+      const arc = document.getElementById('bag-next-arcade');
+      if (arc) arc.onclick = () => { bagModal.classList.add('hidden'); bagModal.classList.remove('flex'); afterBagClose = null; openArcadeModal(); };
+      if (flash) setTimeout(() => { const b = box.querySelector('button'); if (b) b.classList.remove('animate-pulse'); }, 2600);
+    }
+
     function startProgressChallenge(itemId) {
       const raw = PROGRESS_ITEMS.find(p => p.id === itemId);
       if (!raw) return;
@@ -4434,20 +4477,31 @@
           const pick = parseInt(btn.getAttribute('data-pco'), 10);
           if (pick === item.ans) {
             Sfx.win();
+            const gateWasOk = checkChapterGate(state.stageIdx).ok;
+            const rankWasDone = isRankCompleted(item.rank);
             if (!state.completedProgress.includes(item.id)) {
               state.completedProgress.push(item.id);
               if ((state.pendingProgressCount || 0) > 0) state.pendingProgressCount--;
             }
+            const rankJustDone = !rankWasDone && isRankCompleted(item.rank);
+            const gateJustOpened = !gateWasOk && checkChapterGate(state.stageIdx).ok;
             const bonusSp = syncProgressSkillPoints();
             saveProgress();
             updateHud();
             fb.className = 'text-xs font-black text-emerald-300 min-h-[16px]';
-            fb.textContent = `✅ 核章成功！【${item.rank}・${item.title}】已達成！`;
+            let cheer = `✅ 核章成功！【${item.rank}・${item.title}】已達成！`;
+            if (rankJustDone) cheer = `🎉 恭喜！【${item.rank}】${PROGRESS_ITEMS.filter(x => x.rank === item.rank).length} 項全部核章，晉升${item.rank === '剛入團' ? '正式入團' : item.rank + '小狼'}！`;
+            if (gateJustOpened) cheer += ` 🔓 第 ${state.stageIdx + 1} 篇解鎖了，按下方「下一步」出發！`;
+            else if (!rankJustDone) cheer += ' 看看下方的「下一步」。';
+            fb.textContent = cheer;
+            Speech.say(cheer);
             renderBagTab();
+            setTimeout(() => renderBagNext(true), 10);
             setTimeout(() => {
               box.classList.add('hidden');
               renderBagTab();
-            }, 750);
+              setTimeout(() => renderBagNext(rankJustDone || gateJustOpened), 10);
+            }, rankJustDone || gateJustOpened ? 2600 : 1200);
           } else {
             Sfx.hit();
             fb.className = 'text-xs font-black text-rose-300 min-h-[16px]';
